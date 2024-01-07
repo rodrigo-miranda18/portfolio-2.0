@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import ThemeToggle from './ThemeToggle';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import ThemeToggle from './ThemeToggle';
+import LanguageSelect from './LanguageSelect';
 
 interface HeaderProps {
   menuItems: Array<{
@@ -42,7 +43,8 @@ export default function Header({ menuItems = [] }: HeaderProps) {
             ))}
           </ul>
 
-          <div className="flex gap-8 lg:ml-14">
+          <div className="flex items-center gap-4 md:gap-8 lg:ml-14">
+            <LanguageSelect />
             <ThemeToggle />
           </div>
 
