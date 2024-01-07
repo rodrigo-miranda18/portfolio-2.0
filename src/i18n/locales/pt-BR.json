@@ -3,5 +3,12 @@
     "about": "Sobre",
     "experiences": "Experiências",
     "contact": "Contato"
+  },
+  "hero": {
+    "welcome": "Prazer, sou o",
+    "name": "Rodrigo",
+    "lastname": "Miranda",
+    "intro": "Desenvolvedor front-end, especialista em desenvolvimeto de interfaces web, que busca entregar as melhores experiências de uso ao usuário.",
+    "getInTouch": "Entrar em contato"
   }
 }

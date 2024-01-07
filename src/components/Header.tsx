@@ -32,7 +32,7 @@ export default function Header({ menuItems = [] }: HeaderProps) {
         <div className="flex items-center gap-4">
           <ul
             data-open={menuIsOpen}
-            className="absolute inset-0 top-[100px] flex w-full translate-x-[-100%] flex-col items-center gap-9 bg-[--background-hex] px-9 pt-14 transition-transform duration-300 data-[open=true]:translate-x-0 lg:static lg:translate-x-0 lg:flex-row lg:p-0"
+            className="absolute inset-0 top-[100px] z-50 flex w-full translate-x-[-100%] flex-col items-center gap-9 bg-[--background-hex] px-9 pt-14 transition-transform duration-300 data-[open=true]:translate-x-0 lg:static lg:translate-x-0 lg:flex-row lg:p-0"
           >
             {menuItems.map(({ name, link }) => (
               <li key={name}>
