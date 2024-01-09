@@ -10,5 +10,10 @@
     "lastname": "Miranda",
     "intro": "Front-end developer, specialist in web interface development, looking to deliver the best experience to the user.",
     "getInTouch": "Get in touch"
+  },
+  "about": {
+    "title": "1.  About me",
+    "bio": "My full name is Rodrigo Alves Miranda, I'm {age, number}, and I live in Curitiba - PR. I'm currently working as Front-end developer, and graduating in Information Systems at Technological Federal University of Paraná. My main goal is to improve myself more and more in the best web development technologies, using them as tools to build robust websites, which deliver the best experiences to the users. I'm also looking to specialize myself in principles of good practice in software development (clean code, agile methodologies, etc). In my free time, I like to listen to music, watch series, travel, and following the national and international football scene.",
+    "technologiesIntro": "Below are some of the technologies/skills I work with and/or I'm familiar with:"
   }
 }

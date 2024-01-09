@@ -4,7 +4,6 @@ function toggleTheme() {
   const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
     ? 'dark'
     : 'light';
-  console.log(localStorage.theme, preferredTheme);
   const activeTheme = localStorage.theme || preferredTheme;
   const isLightTheme = activeTheme === 'light';
 

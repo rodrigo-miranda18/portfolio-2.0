@@ -10,5 +10,10 @@
     "lastname": "Miranda",
     "intro": "Desenvolvedor front-end, especialista em desenvolvimeto de interfaces web, que busca entregar as melhores experiências de uso ao usuário.",
     "getInTouch": "Entrar em contato"
+  },
+  "about": {
+    "title": "1.  Sobre mim",
+    "bio": "Meu nome é Rodrigo Alves Miranda, tenho {age, number} anos, moro em Curitiba PR. Atualmente trabalho como desenvolvedor Front-End e curso Sistemas de Informação na Universidade Tecnológica Federal do Paraná. Tenho como objetivo me aprimorar cada vez mais nas melhores tecnologias de desenvolvimento web, assim como principios de boas práticas no desenvolvimento de software (clean code, metodologias ágeis, etc). No meu tempo livre gosto de ouvir música, assistir séries, e acompanhar o cenário de futebol nacional e internacional.",
+    "technologiesIntro": "Abaixo alguma das tecnologias/habilidades que trabalho e/ou estou familiarizado:"
   }
 }

@@ -15,6 +15,10 @@ const config: Config = {
         grifter: ['Grifter', 'sans-serif'],
       },
     },
+    fontSize: {
+      '3.5xl': ['2rem', '2.5rem'],
+      ...defaultTheme.fontSize,
+    },
   },
   plugins: [],
 };

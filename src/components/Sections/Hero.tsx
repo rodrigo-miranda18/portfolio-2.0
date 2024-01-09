@@ -4,7 +4,7 @@ export default function Hero() {
   const t = useTranslations('hero');
 
   return (
-    <section className="flex flex-col items-center pb-12 pt-16 lg:pt-28">
+    <section className="flex flex-col items-center py-16 lg:pt-28">
       <h1 className="text-center font-grifter">
         <span className="text-2xl leading-10 text-zinc-500">{t('welcome')}</span>
         <div className="text-7xl leading-[1.1]">

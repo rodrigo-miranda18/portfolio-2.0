@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import Header from '@/components/Header';
 import Hero from '@/components/Sections/Hero';
+import About from '@/components/Sections/About';
 
 export default function Home() {
   const t = useTranslations();
@@ -26,6 +27,7 @@ export default function Home() {
       <main className="px-9">
         <div className="mx-auto max-w-6xl">
           <Hero />
+          <About />
         </div>
       </main>
     </>
