@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelect from './LanguageSelect';
@@ -18,6 +18,10 @@ export default function Header({ menuItems = [] }: HeaderProps) {
   function toggleMenu() {
     setMenuIsOpen((value) => !value);
   }
+
+  useEffect(() => {
+    document.body.style.overflowY = menuIsOpen ? 'hidden' : 'initial';
+  }, [menuIsOpen]);
 
   return (
     <header className="px-9 pb-4 pt-9 lg:pt-11">
