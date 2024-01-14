@@ -36,5 +36,9 @@
         "skills": "Next.js / React.js / Wordpress / PHP / HTML / Sass / JS",
         "jobDescription": "I worked on many types of projects, with maintenance or developing from scratch, using Wordpress as the base technology. I worked more on projects developed in Wordpress Headless, where we used Wordpress as a CMS, and the front-end implementation using frameworks such as React.js and Next.js."
     }
+  },
+  "socials": {
+    "title":"3.  Socials",
+    "description": "Get in touch with me using any of the options below"
   }
 }

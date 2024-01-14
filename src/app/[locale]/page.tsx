@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import Hero from '@/components/Sections/Hero';
 import About from '@/components/Sections/About';
 import Experiences from '@/components/Sections/Experiences';
+import Socials from '@/components/Sections/Socials';
 
 export default function Home() {
   const t = useTranslations();
@@ -17,7 +18,7 @@ export default function Home() {
     },
     {
       name: t('menuItems.contact'),
-      link: '#contact',
+      link: '#socials',
     },
   ];
 
@@ -30,6 +31,7 @@ export default function Home() {
           <Hero />
           <About />
           <Experiences />
+          <Socials />
         </div>
       </main>
     </>

@@ -28,7 +28,7 @@ export default function Experiences() {
 
   return (
     <section id="experiences" className="py-14">
-      <h2 className="text-center text-3.5xl font-bold text-black dark:text-white">{t('title')}</h2>
+      <h2 className="text-center text-3.5xl font-bold">{t('title')}</h2>
 
       <ul className="mt-16 flex flex-col gap-14">
         {experiences.map((experience) => (

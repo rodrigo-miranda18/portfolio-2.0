@@ -31,7 +31,7 @@ export default function About() {
 
   return (
     <section id="about" className="mx-auto max-w-3xl py-14">
-      <h2 className="text-center text-3.5xl font-bold text-black dark:text-white">{t('title')}</h2>
+      <h2 className="text-center text-3.5xl font-bold">{t('title')}</h2>
       <p className="mt-8 text-center text-lg text-zinc-500">
         {t('bio', { age })}
         <br />
