@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import { DM_Sans as DMSans } from 'next/font/google';
 import { useLocale } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
+import { Analytics } from '@vercel/analytics/react';
 
 const DmSans = DMSans({
   variable: '--sans-font',
@@ -33,7 +34,10 @@ export default function RootLayout({ children }: PageProps & { children: ReactNo
 
   return (
     <html lang={locale} className={`${DmSans.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
