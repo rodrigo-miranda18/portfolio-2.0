@@ -40,5 +40,8 @@
   "socials": {
     "title":"3.  Socials",
     "description": "Get in touch with me using any of the options below"
+  },
+  "footer": {
+    "credits": "Made by Rodrigo Miranda"
   }
 }

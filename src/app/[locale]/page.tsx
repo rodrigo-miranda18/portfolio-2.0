@@ -34,6 +34,8 @@ export default function Home() {
           <Socials />
         </div>
       </main>
+
+      <footer className="pb-12 pt-14 text-center text-lg">{t('footer.credits')}</footer>
     </>
   );
 }

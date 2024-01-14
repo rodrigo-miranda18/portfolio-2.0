@@ -40,5 +40,8 @@
   "socials": {
     "title":"3.  Redes sociais",
     "description": "Entre em contato comigo em qualquer uma das opções abaixo"
+  },
+  "footer": {
+    "credits": "Feito por Rodrigo Miranda"
   }
 }
