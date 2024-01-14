@@ -43,5 +43,9 @@
   },
   "footer": {
     "credits": "Feito por Rodrigo Miranda"
+  },
+  "metadata": {
+    "description": "Rodrigo Miranda - Página pessoal de Portfólio",
+    "ogImage": "./og-image-pt-BR.png"
   }
 }
