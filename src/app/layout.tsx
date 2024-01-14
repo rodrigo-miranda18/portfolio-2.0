@@ -7,7 +7,7 @@ import { useLocale } from 'next-intl';
 const DmSans = DMSans({
   variable: '--sans-font',
   subsets: ['latin'],
-  weight: ['400', '600', '700'],
+  weight: ['400', '500', '600', '700'],
 });
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import Header from '@/components/Header';
 import Hero from '@/components/Sections/Hero';
 import About from '@/components/Sections/About';
+import Experiences from '@/components/Sections/Experiences';
 
 export default function Home() {
   const t = useTranslations();
@@ -28,6 +29,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl">
           <Hero />
           <About />
+          <Experiences />
         </div>
       </main>
     </>

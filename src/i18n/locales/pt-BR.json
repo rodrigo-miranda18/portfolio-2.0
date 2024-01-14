@@ -15,5 +15,26 @@
     "title": "1.  Sobre mim",
     "bio": "Meu nome é Rodrigo Alves Miranda, tenho {age, number} anos, moro em Curitiba PR. Atualmente trabalho como desenvolvedor Front-End e curso Sistemas de Informação na Universidade Tecnológica Federal do Paraná. Meu principal objetivo é me aprimorar cada vez mais nas melhores tecnologias de desenvolvimento web, utilizando-as como ferramentas para construir sites robustos, que entreguem as melhores experiências aos usuários. Também busco me especializar em princípios de boas práticas no desenvolvimento de software (código limpo, metodologias ágeis, etc). No meu tempo livre gosto de ouvir música, assistir séries, viajar e acompanhar o cenário do futebol nacional e internacional.",
     "technologiesIntro": "Abaixo alguma das tecnologias/habilidades que trabalho e/ou estou familiarizado:"
+  },
+  "experiences": {
+    "title": "2.  Experiências",
+    "firstExperience": {
+      "companyName": "Apiki Wordpress",
+      "companyLocation": "Governador Valadores (Brasil)",
+      "role": "Desenvolvedor front-end Pleno",
+      "startDate": "Abr - 2023",
+      "endDate": "Agora",
+      "skills": "Next.js / React.js / Wordpress / PHP",
+      "jobDescription": "Desenvovimento e manutenção de aplicação de uma das maiores startups de logística do país, com milhões de usuários. Trabalho na manutenção e desenvolvimento de novas features, utilizando React.js e Next.js, integrando com o Wordpress que é utilizado como CMS, em uma estrutura headless.\n\n Desenvolvimento com foco em SEO, performance, experiência do usuário, e boa experiência de gerenciamento do site por parte do cliente."
+    },
+    "secondExperience": {
+      "companyName": "Apiki Wordpress",
+        "companyLocation": "Governador Valadores (Brasil)",
+        "role": "Desenvolvedor front-end Junior",
+        "startDate": "Set - 2021",
+        "endDate": "Mar - 2023",
+        "skills": "Next.js / React.js / Wordpress / PHP / HTML / Sass / JS",
+        "jobDescription": "Trabalhei em diversos tipos de projeto, dando manutenção ou desenvolvendo do completo zero, utilizando como tecnologia base o Wordpress. Atuei mais em projetos desenvolvidos em Wordpress Headless, onde utilizamos o Wordpress como CMS, e a implementação do Front-end utilizando frameworks como React.js e Next.js."
+    }
   }
 }

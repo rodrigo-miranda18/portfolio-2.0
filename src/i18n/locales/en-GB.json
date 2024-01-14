@@ -15,5 +15,26 @@
     "title": "1.  About me",
     "bio": "My full name is Rodrigo Alves Miranda, I'm {age, number}, and I live in Curitiba - PR. I'm currently working as Front-end developer, and graduating in Information Systems at Technological Federal University of Paraná. My main goal is to improve myself more and more in the best web development technologies, using them as tools to build robust websites, which deliver the best experiences to the users. I'm also looking to specialize myself in principles of good practice in software development (clean code, agile methodologies, etc). In my free time, I like to listen to music, watch series, travel, and following the national and international football scene.",
     "technologiesIntro": "Below are some of the technologies/skills I work with and/or I'm familiar with:"
+  },
+  "experiences": {
+    "title": "2.  Experiences",
+    "firstExperience": {
+      "companyName": "Apiki Wordpress",
+      "companyLocation": "Governador Valadares (Brazil)",
+      "role": "Mid front-end developer",
+      "startDate": "Apr - 2023",
+      "endDate": "Now",
+      "skills": "Next.js / React.js / Wordpress / PHP",
+      "jobDescription": "Development and maintenance of an application for one of the largest logistics startups in the country, with millions of users. I work on maintaining and developing new features, using React.js and Next.js, integrating with Wordpress which is used as a CMS, in an headless architecture.\n\n Development focused on SEO, performance, user experience, and good website management experience by the client."
+    },
+    "secondExperience": {
+      "companyName": "Apiki Wordpress",
+        "companyLocation": "Governador Valadares (Brazil)",
+        "role": "Junior front-end developer",
+        "startDate": "Sep - 2021",
+        "endDate": "Mar - 2023",
+        "skills": "Next.js / React.js / Wordpress / PHP / HTML / Sass / JS",
+        "jobDescription": "I worked on many types of projects, with maintenance or developing from scratch, using Wordpress as the base technology. I worked more on projects developed in Wordpress Headless, where we used Wordpress as a CMS, and the front-end implementation using frameworks such as React.js and Next.js."
+    }
   }
 }
