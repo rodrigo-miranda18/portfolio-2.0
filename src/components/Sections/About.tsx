@@ -30,8 +30,8 @@ export default function About() {
   const age = getAge();
 
   return (
-    <div id="about" className="mx-auto max-w-3xl py-14">
-      <h2 className="text-3.5xl text-center font-bold text-black dark:text-white">{t('title')}</h2>
+    <section id="about" className="mx-auto max-w-3xl py-14">
+      <h2 className="text-center text-3.5xl font-bold text-black dark:text-white">{t('title')}</h2>
       <p className="mt-8 text-center text-lg text-zinc-500">
         {t('bio', { age })}
         <br />
@@ -49,6 +49,6 @@ export default function About() {
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   );
 }
