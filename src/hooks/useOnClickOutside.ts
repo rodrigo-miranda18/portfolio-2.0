@@ -5,6 +5,7 @@ export default function useOnClickOutside(
   handler: (event: MouseEvent<HTMLElement>) => void,
 ) {
   useEffect(() => {
+    // @ts-expect-error could not infer event param type
     function handleClickOutside(event) {
       if (ref.current && !ref.current.contains(event.target)) {
         handler(event);
