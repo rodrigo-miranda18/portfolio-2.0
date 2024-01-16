@@ -17,7 +17,7 @@ export default function Hero() {
 
       <p className="mb-7 mt-4 max-w-xl text-center leading-7">{t('intro')}</p>
 
-      <a href="#socials" className="relative h-16 w-48 p-0.5">
+      <a href="#contact" className="relative h-16 w-48 p-0.5">
         <div className="absolute inset-0 h-full w-full rounded-lg bg-gradient-to-r from-purple-500 to-indigo-500 blur-md" />
         <button className="relative z-10 h-full w-full rounded-lg bg-black font-semibold text-white">
           {t('getInTouch')}

@@ -27,7 +27,7 @@ export default function Socials() {
   const t = useTranslations('socials');
 
   return (
-    <section id="socials" className="mx-auto max-w-3xl py-14 text-center">
+    <section id="contact" className="mx-auto max-w-3xl py-14 text-center">
       <h2 className="text-3.5xl font-bold">{t('title')}</h2>
       <p className="mt-4 text-lg text-zinc-500">{t('description')}</p>
 

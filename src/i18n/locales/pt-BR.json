@@ -13,8 +13,8 @@
   },
   "about": {
     "title": "1.  Sobre mim",
-    "bio": "Meu nome é Rodrigo Alves Miranda, tenho {age, number} anos, moro em Curitiba PR. Atualmente trabalho como desenvolvedor Front-End e curso Sistemas de Informação na Universidade Tecnológica Federal do Paraná. Meu principal objetivo é me aprimorar cada vez mais nas melhores tecnologias de desenvolvimento web, utilizando-as como ferramentas para construir sites robustos, que entreguem as melhores experiências aos usuários. Também busco me especializar em princípios de boas práticas no desenvolvimento de software (código limpo, metodologias ágeis, etc). No meu tempo livre gosto de ouvir música, assistir séries, viajar e acompanhar o cenário do futebol nacional e internacional.",
-    "technologiesIntro": "Abaixo alguma das tecnologias/habilidades que trabalho e/ou estou familiarizado:"
+    "bio": "Meu nome é Rodrigo Alves Miranda, tenho {age, number} anos, moro em Curitiba PR. Atualmente trabalho como desenvolvedor Front-End e curso Sistemas de Informação na Universidade Tecnológica Federal do Paraná. Tenho como principal objetivo aprimorar-me cada vez mais nas melhores tecnologias de desenvolvimento web, utilizando-as como ferramentas para construir sites robustos, que entreguem as melhores experiências aos usuários. Também busco me especializar em princípios de boas práticas no desenvolvimento de software (código limpo, metodologias ágeis, etc). No meu tempo livre gosto de ouvir música, assistir séries, viajar e acompanhar o cenário do futebol nacional e internacional.",
+    "technologiesIntro": "Abaixo, algumas das tecnologias e habilidades com as quais trabalho e/ou estou familiarizado:"
   },
   "experiences": {
     "title": "2.  Experiências",
@@ -38,7 +38,7 @@
     }
   },
   "socials": {
-    "title":"3.  Redes sociais",
+    "title":"3.  Contato",
     "description": "Entre em contato comigo em qualquer uma das opções abaixo"
   },
   "footer": {

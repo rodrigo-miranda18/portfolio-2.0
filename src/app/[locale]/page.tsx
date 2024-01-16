@@ -18,7 +18,7 @@ export default function Home() {
     },
     {
       name: t('menuItems.contact'),
-      link: '#socials',
+      link: '#contact',
     },
   ];
 
