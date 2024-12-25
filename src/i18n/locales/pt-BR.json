@@ -21,11 +21,12 @@
     "firstExperience": {
       "companyName": "Apiki Wordpress",
       "companyLocation": "Governador Valadores (Brasil)",
+      "workModel": "Remoto",
       "role": "Desenvolvedor front-end Pleno",
       "startDate": "Abr - 2023",
       "endDate": "Agora",
       "skills": "Next.js / React.js / Wordpress / PHP",
-      "jobDescription": "Desenvovimento e manutenção de aplicação de uma das maiores startups de logística do país, com milhões de usuários. Trabalho na manutenção e desenvolvimento de novas features, utilizando React.js e Next.js, integrando com o Wordpress que é utilizado como CMS, em uma estrutura headless.\n\n Desenvolvimento com foco em SEO, performance, experiência do usuário, e boa experiência de gerenciamento do site por parte do cliente."
+      "jobDescription": "Desenvolvimento e manutenção de aplicação de uma das maiores startups de logística do país, com milhões de usuários. Trabalho na manutenção e desenvolvimento de novas features, utilizando React.js e Next.js, integrando com o Wordpress que é utilizado como CMS, em uma estrutura headless. Desenvolvimento com foco em SEO, performance, experiência do usuário, e boa experiência de gerenciamento do site por parte do cliente.\n\n Fui responsável por realizar a migração de todo o projeto para as versões mais recentes do Next.js utilizando o modelo App Router, e migração de todo o Design System para o TailwindCSS para suportar server components. Implementei camadas de testes automatizados na aplicação utilizando Cypress, implementando desde testes unitários em componentes mais simples, até testes E2E cobrindo os principais fluxos da aplicação.\n\n Responsável também pelo monitoramento/observabilidade da aplicação através de logs e acompanhamento de métricas, utilizando a AWS CloudWatch."
     },
     "secondExperience": {
       "companyName": "Apiki Wordpress",

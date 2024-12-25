@@ -7,6 +7,9 @@ const technologies = [
   'CSS-in-JS',
   'Tailwind CSS',
   'Redux',
+  'Storybook',
+  'React Testing Library',
+  'Cypress',
   'Node.js',
   'PHP',
   'Git & Github',
@@ -16,6 +19,8 @@ const technologies = [
   'Design Systems',
   'MySQL',
   'MongoDB',
+  'PostgreSQL',
+  'AWS CloudWatch',
 ];
 
 function getAge(): number {

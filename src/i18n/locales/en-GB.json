@@ -21,11 +21,12 @@
     "firstExperience": {
       "companyName": "Apiki Wordpress",
       "companyLocation": "Governador Valadares (Brazil)",
+      "workModel": "Remote",
       "role": "Mid front-end developer",
       "startDate": "Apr - 2023",
       "endDate": "Now",
       "skills": "Next.js / React.js / Wordpress / PHP",
-      "jobDescription": "Development and maintenance of an application for one of the largest logistics startups in the country, with millions of users. I work on maintaining and developing new features, using React.js and Next.js, integrating with Wordpress which is used as a CMS, in an headless architecture.\n\n Development focused on SEO, performance, user experience, and good website management experience by the client."
+      "jobDescription": "Development and maintenance of an application for one of the largest logistics startups in the country, with millions of users. I work on maintaining and developing new features, using React.js and Next.js, integrating with Wordpress which is used as a CMS, in an headless architecture. Development focused on SEO, performance, user experience, and good website management experience by the client.\n\n I was responsible for migrating the entire project to the latest versions of Next.js using the App Router model, and migrating the entire Design System to TailwindCSS to support server components. I also implemented automated testing layers in the application using Cypress, ranging from unit tests for simpler components to E2E tests covering the application's key workflows.\n\n Additionally responsible for monitoring and observability of the application through log analysis and metrics tracking using AWS CloudWatch."
     },
     "secondExperience": {
       "companyName": "Apiki Wordpress",

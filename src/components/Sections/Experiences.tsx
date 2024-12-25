@@ -8,6 +8,7 @@ export default function Experiences() {
       id: 2,
       companyName: t('firstExperience.companyName'),
       companyLocation: t('firstExperience.companyLocation'),
+      workModel: t('firstExperience.workModel'),
       role: t('firstExperience.role'),
       startDate: t('firstExperience.startDate'),
       endDate: t('firstExperience.endDate'),
@@ -18,6 +19,7 @@ export default function Experiences() {
       id: 1,
       companyName: t('secondExperience.companyName'),
       companyLocation: t('secondExperience.companyLocation'),
+      workModel: t('firstExperience.workModel'),
       role: t('secondExperience.role'),
       startDate: t('secondExperience.startDate'),
       endDate: t('secondExperience.endDate'),
@@ -46,7 +48,9 @@ export default function Experiences() {
                     <span className="text-zinc-500">/ {experience.companyLocation}</span>
                   </div>
 
-                  <span className="font-medium">{experience.role}</span>
+                  <span className="block font-medium leading-7">{experience.role}</span>
+
+                  <span className="text-zinc-600 dark:text-zinc-400">{experience.workModel}</span>
                 </div>
 
                 <div className="h-fit w-fit bg-zinc-800 px-5 py-3 text-xs leading-3 text-white">
