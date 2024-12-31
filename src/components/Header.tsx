@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+
+import Link from 'next/link';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelect from './LanguageSelect';
 
@@ -26,12 +29,12 @@ export default function Header({ menuItems = [] }: HeaderProps) {
   return (
     <header className="px-9 pb-4 pt-9 lg:pt-11">
       <div className="m-auto flex max-w-6xl justify-between">
-        <div className="font-grifter text-5xl">
+        <Link href="/" className="font-grifter text-5xl">
           R
           <mark className="bg-transparent bg-gradient-to-r from-purple-500 to-indigo-500 bg-clip-text text-transparent">
             M
           </mark>
-        </div>
+        </Link>
 
         <div className="flex items-center gap-4">
           <ul
@@ -40,9 +43,9 @@ export default function Header({ menuItems = [] }: HeaderProps) {
           >
             {menuItems.map(({ name, link }) => (
               <li key={name}>
-                <a href={link} onClick={() => setMenuIsOpen(false)}>
+                <Link href={link} onClick={() => setMenuIsOpen(false)}>
                   {name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

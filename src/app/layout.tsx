@@ -4,9 +4,11 @@ import './globals.css';
 import { Metadata } from 'next';
 import { DM_Sans as DMSans } from 'next/font/google';
 import { cookies } from 'next/headers';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/react';
+
+import Header from '@/components/Header';
 
 const DmSans = DMSans({
   variable: '--sans-font',
@@ -33,6 +35,22 @@ export async function generateMetadata({ params: { locale } }: PageProps): Promi
 export default function RootLayout({ children }: PageProps & { children: ReactNode }) {
   const locale = useLocale();
 
+  const t = useTranslations();
+  const menuItens = [
+    {
+      name: t('menuItems.about'),
+      link: '#about',
+    },
+    {
+      name: t('menuItems.experiences'),
+      link: '#experiences',
+    },
+    {
+      name: t('menuItems.contact'),
+      link: '#contact',
+    },
+  ];
+
   const cookieStore = cookies();
   const theme = cookieStore.get('theme');
 
@@ -42,6 +60,7 @@ export default function RootLayout({ children }: PageProps & { children: ReactNo
       className={`${DmSans.variable}${theme && theme.value === 'dark' ? ' dark' : ''}`}
     >
       <body>
+        <Header menuItems={menuItens} />
         {children}
         <Analytics />
       </body>

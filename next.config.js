@@ -1,7 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const withNextIntl = require('next-intl/plugin')('./src/i18n/index.ts');
+const withMDX = require('@next/mdx')({});
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+};
 
-module.exports = withNextIntl(nextConfig);
+module.exports = withNextIntl(withMDX(nextConfig));
