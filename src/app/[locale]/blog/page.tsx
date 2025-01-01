@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
 
+import { Link } from '@/navigation';
 import { formatPostDate, getPosts } from '@/utils/posts';
 
 interface PageProps {

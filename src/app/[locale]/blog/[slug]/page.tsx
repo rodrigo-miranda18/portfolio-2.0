@@ -54,7 +54,7 @@ export default async function PostSingle({ params }: PageProps) {
           <dd className="text-base font-semibold text-purple-500">{post.metadata.timeToRead}</dd>
         </dl>
 
-        <div className="prose prose-zinc prose-p:text-base prose-li:text-base prose-a:font-semibold prose-li:marker:font-semibold prose-h2:text-2xl prose-h3:text-xl lg:prose-h3:text-2xl lg:prose-h2:text-3xl lg:prose-xl lg:prose-p:text-lg lg:prose-li:text-lg dark:prose-invert mt-9">
+        <div className="prose prose-zinc mt-9 lg:prose-xl dark:prose-invert prose-h2:text-2xl prose-h3:text-xl prose-p:text-base prose-a:font-semibold prose-li:text-base prose-li:marker:font-semibold lg:prose-h2:text-3xl lg:prose-h3:text-2xl lg:prose-p:text-lg lg:prose-li:text-lg">
           <Post />
         </div>
       </article>

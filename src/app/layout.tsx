@@ -42,19 +42,19 @@ export default function RootLayout({ children }: PageProps & { children: ReactNo
   const menuItens = [
     {
       name: t('menuItems.about'),
-      link: '#about',
+      link: '/#about',
     },
     {
       name: t('menuItems.experiences'),
-      link: '#experiences',
+      link: '/#experiences',
     },
     {
       name: t('menuItems.contact'),
-      link: '#contact',
+      link: '/#contact',
     },
     {
       name: t('menuItems.blog'),
-      link: `/${locale}/blog`,
+      link: `/blog`,
     },
   ];
 
