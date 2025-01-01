@@ -1,6 +1,7 @@
-import { formatPostDate, getPosts } from '@/utils/posts';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+
+import { formatPostDate, getPosts } from '@/utils/posts';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -19,14 +20,26 @@ export default async function Blog({ params }: PageProps) {
 
       <ul className="mt-8">
         {posts.map((post) => (
-          <li key={post.slug} className="border-t border-gray-200 py-9">
+          <li key={post.slug} className="border-t border-gray-200 py-9 dark:border-zinc-700">
             <h2 className="text-2xl font-semibold hover:underline">
               <Link href={`/blog/${post.slug}`}>{post.metadata.title}</Link>
             </h2>
 
-            <span className="mt-2 block text-sm font-semibold text-purple-500">
-              {formatPostDate(post.metadata.publishedDate, locale)} - {post.metadata.timeToRead}
-            </span>
+            <div className="mt-2 flex gap-x-1 text-sm font-semibold text-purple-500">
+              <dl>
+                <dt className="sr-only">Published on</dt>
+                <dd>
+                  <time dateTime={post.metadata.publishedDate}>
+                    {formatPostDate(post.metadata.publishedDate, locale)}
+                  </time>
+                </dd>
+              </dl>
+              -
+              <dl>
+                <dt className="sr-only">Time to read</dt>
+                <dd>{post.metadata.timeToRead}</dd>
+              </dl>
+            </div>
 
             <p className="mt-3 text-base leading-7 text-zinc-500">{post.metadata.description}</p>
 
