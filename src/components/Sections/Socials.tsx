@@ -24,7 +24,7 @@ const socialMedias = [
 ];
 
 export default function Socials() {
-  const t = useTranslations('socials');
+  const t = useTranslations('home.socials');
 
   return (
     <section id="contact" className="mx-auto max-w-3xl py-14 text-center">

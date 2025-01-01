@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 
 export default function Experiences() {
-  const t = useTranslations('experiences');
+  const t = useTranslations('home.experiences');
 
   const experiences = [
     {

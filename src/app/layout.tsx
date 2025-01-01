@@ -21,13 +21,16 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params: { locale } }: PageProps): Promise<Metadata> {
-  const t = await getTranslations({ locale, namespace: 'metadata' });
+  const t = await getTranslations({ locale, namespace: 'home' });
 
   return {
     title: 'Rodrigo Miranda',
-    description: t('description'),
+    description: t('metadata.description'),
     openGraph: {
-      images: [t('ogImage')],
+      images: [t('metadata.ogImage')],
+    },
+    alternates: {
+      canonical: '/',
     },
   };
 }
@@ -48,6 +51,10 @@ export default function RootLayout({ children }: PageProps & { children: ReactNo
     {
       name: t('menuItems.contact'),
       link: '#contact',
+    },
+    {
+      name: t('menuItems.blog'),
+      link: `/${locale}/blog`,
     },
   ];
 

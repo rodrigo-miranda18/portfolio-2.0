@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 
 export default function Hero() {
-  const t = useTranslations('hero');
+  const t = useTranslations('home.hero');
 
   return (
     <section className="flex flex-col items-center py-16 lg:pt-28">

@@ -1,0 +1,121 @@
+export const metadata = {
+  title: 'Porquê Server Components não suportam CSS-in-JS?',
+  description: 'Entenda como funciona uma biblioteca CSS-in-JS e porquê a maioria são incompatíveis com Server Components.',
+  publishedDate: '2024-12-29T21:44:00Z',
+	timeToRead: '3min de leitura',
+  tags: ['html', 'css', 'javascript', 'js', 'react', 'next.js', 'server-components', 'styled-components', 'css-in-js', 'context', 'context-api'],
+}
+
+Bibliotecas como Styled-Components e Emotion não lidam bem com server components, e isso se trata da necessidade de Javascript em tempo de execução para gerar os estilos.
+
+## Server Components e Server-side Rendering
+
+
+Antes de tudo é preciso esclarecer a diferença entre Server Components e Server-side Rendering (SSR).
+
+SSR ao que todos conhecem é renderizar uma página HTML no lado do servidor. Basicamente é o conceito de gerar todo o arquivo HTML de uma página, que contém a UI inicial, no lado do servidor, e depois enviar ao cliente. Segue basicamente este fluxo:
+
+1. Usuário acessa a página.
+2. O Node.js da aplicação recebe a requisição, que produz e retorna o HTML completo da página contendo a UI inicial da página.
+3. Quando esse HTML chega ao browser do usuário, o React renderiza novamente os mesmos componentes, repetindo o trabalho feito no servidor. Esse processo é conhecido como hidratação, em vez de gerar novos elementos HTML, ele adota os elementos HTML já gerados. Além disso, é necessário adicionar interatividade ao HTML estático retornado pelo servidor, adicionando eventos, etc.
+
+Os principais benefícios do SSR são:
+
+- **Melhor SEO**: Os motores de busca preferem páginas que já vem pré-renderizadas e com o conteúdo completo, isso pois conseguem ler o conteúdo da página e indexar melhor, sem precisar esperar muito tempo. Com SSR, o HTML gerado no servidor já inclui o conteúdo renderizado, o que facilita a indexação pelos crawlers.
+- **Melhor FCP (First Contentful Paint)**: O FCP é uma métrica do Core Web Vitals e uma métrica importante para a experiência do usuário. Com SSR, o conteúdo da página é carregado mais rapidamente, antes mesmo do javascript carregar, permitindo que os usuários vejam o conteúdo mais rapidamente.
+- **Visualização da página sem Javascript habilitado**: Como o conteúdo já é renderizado no servidor e incluído no HTML, os usuários ainda conseguem visualizar a página mesmo que o JavaScript esteja desativado ou bloqueado.
+
+Mas esse modelo possui uma limitação. Todo código escrito será executado tanto no servidor quanto no cliente. Não existe maneiras de criar componentes que irão renderizar apenas no lado do servidor.
+
+Vamos supor o seguinte código:
+
+```jsx
+export default function Home() {
+  const posts = db.query('/posts');
+  
+  return (
+    <main>
+      {posts.map(item => (
+        <Post key={item.id} {...item} />
+      ))}
+    </main>
+  );
+}
+```
+
+O código acima funcionaria muito bem rodando apenas no servidor, mas ao rodar novamente no client produziria um erro, já que o cliente não possui acesso ao banco de dados. Ou seja, não é possível dizer ao React "Rode esse código apenas no servidor".
+
+Alguns dos frameworks mais famosos como o Next.js vieram com as suas próprias soluções, onde adicionam camadas de código que rodam fora do React, para então rodar apenas no servidor. No Next.js temos o `getServerSideProps`, que busca os dados necessários e então retorna ao cliente em formato de props React. O problema é que tais funções precisam ficar no início do fluxo, no topo da "página", não é possível adicionar um getServerSideProps em qualquer lugar.
+
+Os React Server Components vieram para solucionar esse problema. Com eles é possível fazer recursos de "servidor" em componentes React. A partir da versão 18 do React, todos os componentes são server components por padrão, e para dizer que um componente deve rodar tanto no servidor quanto no cliente, é necessário adicionar a flag `"use client"`.
+
+**Então porquê as bibliotecas CSS-in-JS não funcionam em server components?**
+
+Bom, existem vários motivos aos quais as bibliotecas mencionadas não funcionam bem com server components. Mas o motivo principal é que eles foram criadas para rodar no browser.
+
+## Como funciona uma biblioteca CSS-in-JS?
+
+Vamos olhar para este trecho de código que utiliza styled-components:
+
+```jsx
+const Button = styled.button`
+  background: blue	
+	font-size: 2rem;
+	color: white;
+`;
+
+export default function Dashboard() {
+	return (
+		<Button>Click me!</Button>
+	);
+}
+```
+
+**Como o componente Button produz um botão estilizado com as regras CSS que passamos?** O processo é basicamente esse:
+
+- `styled.button` é uma função que gera um componente React dinâmico com o elemento HTML enviado como parâmetro
+- Um element `<style>` é gerado com o conteúdo CSS e incluído no `<head>` do nosso documento HTML
+- A classe CSS única gerada no element `<style>` é atribuída ao elemento `<button>`
+
+Este fluxo básico funciona tanto em SSR quanto CSR (Client-side Rendering). No entanto, a medida que o usuário interage com a aplicação, é necessário criar novos estilos, remover, ou modificar estilos já existentes.
+
+Vamos pensar no seguinte caso:
+
+```jsx
+const Loader = styled.div`
+	color: grey;
+	font-style: italic;
+`
+
+function Form() {
+	const { formState: { isSubmitting  } = useForm();
+	
+	return (
+		<Form>
+			{isSubmitting ? (
+				<Loader>
+			) : (
+				...Rest of code
+			)}
+		</Form>
+	)
+ }
+```
+
+No trecho de código acima, os estilos para o componente estilizado `Loader` não são incluídos no CSS inicial da página, e depois, quando o formulário estiver sendo submetido, esses estilos devem ser incluídos na `<style>` tag do nosso HTML. **E aí que está o grande ponto.**
+
+Internamente, o Styled Components faz grande uso da Context Api, do React. Ele utiliza para gerenciar os estilos da aplicação, em um valor global que pode ser compartilhado entre qualquer componente da aplicação. Dessa forma, qualquer componente pode atualizar os estilos renderizados da página, a medida que são incluídos/removidos da árvore DOM.
+
+Além disso, também sabemos que o Styled Components fornece suporte para "Theming" através de um `<ThemeProvider>` que fica por volta da aplicação, fornecendo um estado global que pode ser acessado por todo e qualquer componente da aplicação, que permite que os estilos dos componentes sejam dinamicamente ajustados com base no tema fornecido pelo contexto. Esse é outro recurso muito utilizado pela biblioteca que faz uso da Context Api.
+
+Infelizmente, como todos sabem, RSC não suportam a Context Api, **e é neste ponto que existe a incompatibilidade.**
+
+A maioria das bibliotecas CSS-in-JS precisam de uma maneira de compartilhar estilos entre os componentes, e a Context Api é a forma mais eficiente de fazer isso. No entanto, não existe nenhuma forma nativa no React para repetir esse comportamento em Server Components.
+
+## Conclusão
+
+Depois de mais de 1 ano e meio do lançamento de React Server Components, ainda não existem bibliotecas CSS-in-JS que suportem Server Components e forneçam todos os recursos que antes tinhamos acesso nas principais bibliotecas CSS-in-JS. Entretanto, esse é um tópico ainda em constante evolução.
+
+Existe um [repositório](https://github.com/joshwcomeau/dream-css-tool) que propõe uma ferramenta CSS-in-JS dos "sonhos", que discorre através de algumas alternativas para resolver o problema da dependência da Context Api. Por mais que o autor do repositório não tenha chego em resultados 100% utilizáveis e concretos, a discussão é bem interessante e mostra evoluções acerca deste problema, utilizando-se de outras APIs do React para tal.
+
+O repositório também discute outras ferramentas como o [Linaria](https://github.com/callstack/linaria) e o [PandaCSS](https://github.com/chakra-ui/panda) que são ferramentas CSS-in-JS que não exigem Javascript em runtime e são compatíveis com RSC. Vale a pena conferir.

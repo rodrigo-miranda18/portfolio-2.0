@@ -31,7 +31,7 @@ function getAge(): number {
 }
 
 export default function About() {
-  const t = useTranslations('about');
+  const t = useTranslations('home.about');
   const age = getAge();
 
   return (

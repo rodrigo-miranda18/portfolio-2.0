@@ -5,7 +5,7 @@ import Experiences from '@/components/Sections/Experiences';
 import Socials from '@/components/Sections/Socials';
 
 export default function Home() {
-  const t = useTranslations();
+  const t = useTranslations('home');
 
   return (
     <>
