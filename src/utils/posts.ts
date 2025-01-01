@@ -9,7 +9,7 @@ interface PostMetadata {
   tags: string;
 }
 
-interface Post {
+export interface Post {
   slug: string;
   metadata: PostMetadata;
 }

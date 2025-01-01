@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss';
 import defaultTheme from 'tailwindcss/defaultTheme';
+import { PluginUtils } from 'tailwindcss/types/config';
 
 const config: Config = {
   darkMode: 'class',
@@ -14,7 +15,7 @@ const config: Config = {
         sans: ['var(--sans-font)', ...defaultTheme.fontFamily.sans],
         grifter: ['Grifter', 'sans-serif'],
       },
-      typography: ({ theme }) => ({
+      typography: ({ theme }: PluginUtils) => ({
         zinc: {
           css: {
             '--tw-prose-body': theme('colors.zinc[500]'),

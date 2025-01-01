@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { Link, usePathname } from '@/navigation';
+import { Link, usePathname } from '@/i18n/routing';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import useOnClickOutside from '@/hooks/useOnClickOutside';
 
@@ -42,8 +42,6 @@ export default function LanguageSelect() {
       >
         {languages.map(({ icon, name, value }) => (
           <li key={value} className="transition-colors hover:bg-black/5 dark:hover:bg-zinc-700/65">
-            {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-            {/* @ts-expect-error */}
             <Link href={pathname} locale={value} className="flex gap-x-2 px-4 py-3 md:px-5">
               <span>{icon}</span>
               <span className="hidden md:inline">{name}</span>

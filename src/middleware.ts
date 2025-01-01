@@ -1,5 +1,5 @@
 import createMiddleware from 'next-intl/middleware';
-import { locales, localePrefix } from './navigation';
+import { locales, localePrefix, defaultLocale } from './i18n/routing';
 
 export default createMiddleware({
   locales,
@@ -8,7 +8,7 @@ export default createMiddleware({
 
   localeDetection: true,
 
-  defaultLocale: 'en-GB',
+  defaultLocale,
 });
 
 export const config = {

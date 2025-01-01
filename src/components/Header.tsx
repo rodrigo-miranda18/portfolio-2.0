@@ -3,20 +3,33 @@
 import { useEffect, useState } from 'react';
 
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { Link } from '@/navigation';
+import { Link } from '@/i18n/routing';
 
 import ThemeToggle from './ThemeToggle';
 import LanguageSelect from './LanguageSelect';
+import { useTranslations } from 'next-intl';
 
-interface HeaderProps {
-  menuItems: Array<{
-    name: string;
-    link: string;
-  }>;
-}
-
-export default function Header({ menuItems = [] }: HeaderProps) {
+export default function Header() {
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>();
+  const t = useTranslations();
+  const menuItems = [
+    {
+      name: t('menuItems.about'),
+      link: '/#about',
+    },
+    {
+      name: t('menuItems.experiences'),
+      link: '/#experiences',
+    },
+    {
+      name: t('menuItems.contact'),
+      link: '/#contact',
+    },
+    {
+      name: t('menuItems.blog'),
+      link: `/blog`,
+    },
+  ];
 
   function toggleMenu() {
     setMenuIsOpen((value) => !value);

@@ -1,6 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
+import { ChevronLeft } from 'lucide-react';
 
+import { Link } from '@/i18n/routing';
 import { formatPostDate, getPost, getPostSlugs } from '@/utils/posts';
 
 interface PageProps {
@@ -25,14 +28,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function PostSingle({ params }: PageProps) {
+  const { locale, slug } = await params;
+  const t = await getTranslations({ locale, namespace: 'blog' });
+
   try {
-    const { locale, slug } = await params;
     const { default: Post } = await import(`../posts/${slug}/${locale}.mdx`);
     const post = await getPost(slug, locale);
 
     return (
       <article className="mx-auto max-w-3xl px-9 pb-16 pt-12">
-        <dl>
+        <Link href="/blog" className="flex items-center gap-x-1 font-semibold text-purple-500">
+          <ChevronLeft size={16} />
+          {t('goBack')}
+        </Link>
+
+        <dl className="mt-8">
           <dt className="sr-only">Published on</dt>
           <dd className="text-base text-zinc-500">
             <time dateTime={post.metadata.publishedDate}>
