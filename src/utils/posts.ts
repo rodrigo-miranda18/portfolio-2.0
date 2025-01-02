@@ -45,7 +45,7 @@ export function formatPostDate(dateString: string, locale: string): string {
 
   return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
-    month: 'long',
+    month: 'short',
     year: 'numeric',
   }).format(date);
 }
