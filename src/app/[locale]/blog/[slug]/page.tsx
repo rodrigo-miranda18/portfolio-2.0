@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { ChevronLeft } from 'lucide-react';
 
-import { Link } from '@/i18n/routing';
+import { Link, locales } from '@/i18n/routing';
 import { formatPostDate, getPost, getPostSlugs } from '@/utils/posts';
 
 interface PageProps {
@@ -14,6 +14,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { locale, slug } = await params;
   const { metadata } = await getPost(slug, locale);
 
+  const ogImage = metadata.heroImage
+    ? {
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/${metadata.heroImage}`,
+      }
+    : null;
+
   return {
     title: metadata.title,
     description: metadata.description,
@@ -23,6 +29,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: metadata.description,
       publishedTime: metadata.publishedDate,
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/${locale}/blog/${slug}`,
+      ...(ogImage && { images: [ogImage] }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: metadata.title,
+      description: metadata.description,
+      ...(ogImage && { images: [ogImage] }),
     },
   };
 }
@@ -75,7 +88,16 @@ export default async function PostSingle({ params }: PageProps) {
 }
 
 export function generateStaticParams() {
-  return getPostSlugs();
+  const slugs = getPostSlugs();
+  const paths: { slug: string; locale: string }[] = [];
+
+  slugs.forEach((slug) => {
+    locales.forEach((locale) => {
+      paths.push({ slug, locale });
+    });
+  });
+
+  return paths;
 }
 
 export const dynamicParams = false;
