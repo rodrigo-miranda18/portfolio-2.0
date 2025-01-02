@@ -6,6 +6,7 @@ interface PostMetadata {
   description: string;
   publishedDate: string;
   timeToRead: string;
+  heroImage: string;
   tags: string;
 }
 
