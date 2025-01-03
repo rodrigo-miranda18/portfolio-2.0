@@ -26,7 +26,7 @@ export async function getPost(slug: string, locale: string): Promise<Post> {
 }
 
 export function getPostSlugs(): string[] {
-  const postsDirectory = path.join(process.cwd(), 'src', 'app', '[locale]', 'blog', 'posts');
+  const postsDirectory = path.resolve(process.cwd(), 'src/app/[locale]/blog/posts');
   return fs.readdirSync(postsDirectory);
 }
 

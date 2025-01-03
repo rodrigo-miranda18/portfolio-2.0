@@ -7,7 +7,6 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   experimental: {
     mdxRs: true,
-    nftTracing: true,
   },
 };
 
