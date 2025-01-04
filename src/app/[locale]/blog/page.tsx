@@ -58,3 +58,5 @@ export default async function Blog({ params }: PageProps) {
     </section>
   );
 }
+
+export const dynamic = 'force-static';
