@@ -45,7 +45,7 @@ export default async function PostSingle({ params }: PageProps) {
   const t = await getTranslations({ locale, namespace: 'blog' });
 
   try {
-    const { default: Post } = await import(`../posts/${slug}/${locale}.mdx`);
+    const { default: Post } = await import(`@/i18n/posts/${slug}/${locale}.mdx`);
     const post = await getPost(slug, locale);
 
     return (

@@ -16,7 +16,7 @@ export interface Post {
 }
 
 export async function getPost(slug: string, locale: string): Promise<Post> {
-  const file = await import(`../app/[locale]/blog/posts/${slug}/${locale}.mdx`);
+  const file = await import(`../i18n/posts/${slug}/${locale}.mdx`);
 
   if (file?.metadata) {
     return { slug, metadata: file.metadata };
@@ -26,7 +26,7 @@ export async function getPost(slug: string, locale: string): Promise<Post> {
 }
 
 export function getPostSlugs(): string[] {
-  const postsDirectory = path.resolve(process.cwd(), 'src/app/[locale]/blog/posts');
+  const postsDirectory = path.resolve(process.cwd(), 'src/i18n/posts');
   return fs.readdirSync(postsDirectory);
 }
 
