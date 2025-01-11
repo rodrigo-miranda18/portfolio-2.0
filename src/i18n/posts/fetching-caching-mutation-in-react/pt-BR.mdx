@@ -1,0 +1,349 @@
+export const metadata = {
+  title: 'Fetch de dados, cache, e mutação no React',
+  description: 'Entenda as melhores opções para manipulação de dados em uma aplicação React',
+  publishedDate: '2025-01-10T21:09:00Z',
+	timeToRead: '10min read',
+	// heroImage: '/posts/css-in-js-and-server-components.jpg',
+  tags: ['html', 'css', 'javascript', 'js', 'react', 'next.js', 'swr', 'react-query', 'server-components', 'hooks'],
+}
+
+O principal objetivo desse artigo é discutir as melhores opções para lidar com dados em uma aplicação React moderna.
+
+Qualquer aplicação web um pouco mais complexa precisa lidar com fetch e mutação de dados, é uma tarefa fundamental em quase todo projeto. Entretanto, com as ultimas atualizações e constantes evoluções no ecossistema React, novas maneiras de lidar com dados foram introduzidas, e o principal objetivo desse artigo é apresentar as principais formas e discutir as melhores.
+
+## Fetch de dados
+
+O fetch de dados no React pode ser realizado de diferentes formas, dependendo do local onde ele ocorre: no **server-side** ou no **client-side**. Abaixo vamos discutir as opções de cada uma.
+
+### Server-side
+
+Com a introdução dos Server Components, se tornou possível realizar chamadas assíncronas dentro de componentes React. Com isso podemos fazer fetch de dados diretamente nos nossos componentes. Uma das possibilidades é utilizar o método nativo **fetch**:
+
+```jsx
+export default async function Page() {
+  const response = await fetch("https://api.example.com/data");
+  const data = await data.json();
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+```
+
+Se você estiver utilizando um framework como o Next.js, pode utilizar as estratégias de cache fornecidas pela biblioteca. O Next.js extende a [fetch](https://developer.mozilla.org/docs/Web/API/Fetch_API) api nativa do browser, adicionando uma nova semântica para definição de cache e revalidação.
+
+```jsx
+fetch(`https://...`, {
+  cache: 'force-cache' | 'no-store',
+  next: { revalidate: false | 0 | number }
+})
+```
+
+As opções de cache e revalidação permitem que você controle o comportamento do cache de forma mais granular, definindo se a requisição deve ser feita novamente ou não, e em qual intervalo de tempo.
+
+Por padrão, a partir da versão 15 do Next.js, a diretiva padrão de cache é o `no-store`, o que significa que a requisição não será cacheada e executará a cada renderização. A diretiva `no-store` é útil para casos em que você precisa de dados sempre atualizados, como em um dashboard, por exemplo
+
+No entanto, na maioria das vezes não é necessário e nem desejável que a requisição seja feita a todo momento. Para esses casos, você pode utilizar a diretiva `force-cache` para que a requisição seja cacheada e definir um tempo de vida para o cache com a opção `revalidate`. O valor deve ser definido em segundos.
+
+```jsx
+fetch(`https://...`, {
+  cache: 'force-cache',
+  next: { revalidate: 60 } // Tempo de vida do cache de 60 segundos
+})
+
+fetch(`https://...`, {
+  cache: 'no-store',
+  next: { revalidate: 60 } // Dispara um erro pois as opções são conflitantes
+})
+```
+
+Também é possível taggear as requisições com o parâmetro `tags`.
+
+```jsx
+{ cache: 'force-cache', next: { tags: ['posts'] } }
+```
+
+Este recurso é útil para casos em que você precisa ter um controle maior do cache das requisições e também invalidar manualmente utilizando o método [revalidateTag](https://nextjs.org/docs/app/api-reference/functions/revalidateTag). Vamos explorar melhor esse método ao falarmos de mutação de dados.
+
+### Client-side
+
+No client-side, a forma mais utilizada e mais comum de fazer fetch de dados é utilizando o hook `useEffect` para realizar a chamada assíncrona. O exemplo mais básico disso é:
+
+```jsx
+'use client';
+
+import { useEffect, useState } from 'react';
+
+export default function Dashboard() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch("https://api.example.com/data")
+      .then((response) => response.json())
+      .then((data) => setData(data));
+  }, []);
+
+  if (!data) {
+    return <div>loading...</div>;
+  }
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+```
+
+No entanto, mesmo sendo a forma mais utilizada, **não quer dizer que é a melhor.**
+
+A partir da versão 19 do React, foi introduzido uma nova API para lidar com promises ou contextos, o `use`. O `use` pode ser utilizado para resolver promises de forma mais declarativa e sem a necessidade de utilizar o hook `useEffect`. O exemplo acima poderia ser reescrito da seguinte forma:
+
+```jsx
+'use client';
+
+import { use } from 'react';
+
+export default function Dashboard({ promise }) {
+  const data = use(promise);
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+```
+
+Como vocês devem ter notado, a promise é passada como prop para o componente `Dashboard`. Isso se dá pois o `use` não é capaz de resolver promises criadas na renderização, portanto, elas devem ser criadas em um server component e passadas como prop para os client components.
+
+A API `use` integra com o [Suspense](https://react.dev/reference/react/Suspense) e com [Error Boundaries](https://react.dev/reference/react/Suspense). Enquanto a Promise não é resolvida, o componente fornecido como fallback do Suspense será exibido em tela. Caso a promise seja rejeitada, o erro será capturado pelo Error Boundary mais próximo. Quando enfim a promise for resolvida com sucesso, então o componente `Dashboard` é renderizado.
+
+É importante utilizar o Suspense juntamente com o `use` pois o `use` suspende a renderização do componente até que a promise seja resolvida. Ao utilizar o Suspense você exibe um feedback ao usuário enquanto o componente `Dashboard` não é renderizado.
+
+O exemplo completo ficaria assim:
+
+```jsx
+// App.js
+import { Dashboard, DashboardContainer } from './Dashboard';
+
+export default function App() {
+  const promise = fetch('https://api.example.com/data');
+
+  return (
+    <DashboardContainer promise={promise} />
+  );
+}
+
+// Dashboard.js
+'use client';
+
+import { use } from 'react';
+import { ErrorBoundary } from "react-error-boundary";
+
+export function Dashboard({ promise }) {
+  const data = use(promise);
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+
+export function DashboardContainer({ promise }) {
+  const data = use(promise);
+
+  return (
+    <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+      <Suspense fallback={<p>⌛Loading...</p>}>
+        <Dashboard promise={promise} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+```
+
+#### Outras alternativas
+
+
+Podemos utilizar também bibliotecas como [**react-query**](https://tanstack.com/query/v5/docs/framework/react/overview) ou [**swr**](https://swr.vercel.app/).
+
+O benefício de se utilizar essas bibliotecas dedicadas é que elas já possuem funcionalidades prontas para lidar com cache, revalidação, e outras funcionalidades mais complexas de uma aplicação real. Além disso, elas possuem uma API mais simples e intuitiva para lidar com os estados de loading, erro, etc.
+
+```jsx
+// react-query
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+
+async function getData() {
+  const response = await fetch('https://api.example.com/data');
+  return response.json();
+}
+
+export function App() {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['data'],
+    queryFn: getData,
+  });
+
+  if (error) return <div>Failed to load</div>;
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+```
+
+```jsx
+// swr
+'use client';
+
+import useSWR from 'swr';
+
+export function App() {
+  const { data, error, isLoading } = useSWR('https://api.example.com/data', fetcher);
+
+  if (error) return <div>Failed to load</div>;
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+```
+
+<hr/>
+
+## Mutação de dados
+
+A mutação de dados é o ato de criar, atualizar, ou deletar dados em tempo real na aplicação.
+
+Em um exemplo básico podemos pensar em realizar um POST/PATCH/DELETE request, e atualizar o estado da aplicação através de um estado global com os dados atualizados.
+
+No entanto, essa abordagem pode se tornar complexa e difícil de manter conforme a aplicação cresce. Imagina criar um estado global para cada entidade da aplicação, e ter que lidar com a atualização de cada um deles de forma manual.
+
+Também efetuar um full page refresh a cada mutação não é uma experiência agradável para o usuário, além de que a cada atualização é necessário fazer uma nova requisição para buscar os dados atualizados.
+
+Vamos ver como podemos melhorar essa experiência utilizando as mesmas bibliotecas que vimos anteriormente.
+
+### Next.js
+
+No Next.js, podemos utilizar as [Server Actions](https://react.dev/reference/rsc/server-functions) para realizar mutações de dados no server-side. As Server Actions são funções que são executadas no server-side e podem ser chamadas diretamente nos componentes React.
+
+Em Server Components podemos criar Server Functions com a diretiva `use server` no início da função.
+
+```jsx
+export async default function Page() {
+  // Server Action
+  async function createPost() {
+    'use server'
+    // Mutate data
+    // ...
+ 
+  return <></>;
+}
+```
+
+Já em Client Components, nós podemos criar um arquivo separado que possui a diretiva `use server` e chamar essas funções diretamente em eventos html, como um click de um botão, por exemplo, ou utilizando o atributo action do elemento form.
+
+```jsx
+// actions.js
+'use server';
+ 
+export async function createPost() {}
+
+// button.js
+'use client'
+ 
+import { createPost } from '@/app/actions';
+ 
+export function Button() {
+  return (
+    <button
+      onClick={async () => {
+        const createdPost = await createPost()
+      }}
+    >
+      Create
+    </button>
+  );
+}
+```
+
+Depois de realizado a mutação, podemos utilizar o método `revalidateTag` ou o método `revalidatePath` para revalidar o cache das requisições.
+
+```jsx
+// actions.js
+'use server'
+ 
+import { revalidateTag } from 'next/cache';
+import { redirect } from 'next/navigation'
+ 
+export async function createPost(formData: FormData) {
+  // Mutate data
+  // ...
+ 
+  revalidateTag('posts'); // Ou revalidatePath('/posts')
+  redirect('/posts'); // Redirecionar para a página de posts
+}
+```
+
+### React Query
+
+Para fins de exemplo, vou apresentar apenas a mutação de dados com o React Query, mas o mesmo pode ser feito com o SWR de forma parecida.
+
+No React Query, podemos utilizar o hook `useMutation` para realizar mutações de dados. O hook `useMutation` retorna uma função `mutateAsync` que pode ser chamada para realizar a mutação.
+
+```jsx
+'use client';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+async function createPost(formData) {
+  const response = await fetch('https://api.example.com/posts', {
+    method: 'POST',
+    body: JSON.stringify(formData),
+  });
+
+  return response.json();
+}
+
+export function App() {
+  const queryClient = useQueryClient();
+  const { mutateAsync: createPostFn } = useMutation({
+    mutationFn: createPost,
+    onSuccess(_, variables) {
+      queryClient.setQueryData(['posts'], (data) => (
+        [...data, variables]
+      ));
+    }
+  });
+
+  async function handleCreatePost(data) {
+    try {
+      await createPostFn(data);
+
+      alert('Post criado com sucesso!');
+    } catch (error) {
+      alert('Erro ao criar o post');
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit(handleCreatePost)}>
+      {/* Form fields */}
+    </form>
+  );
+}
+```
+
+O hook `useMutation` aceita um objeto de configuração com a função `mutationFn` que é a função que realiza a mutação, e a função `onSuccess` que é chamada quando a mutação é realizada com sucesso. No exemplo acima, a função `onSuccess` atualiza o cache dos posts com o novo post criado.
+
+Esta abordagem é muito interessante pois o React Query não realiza nenhuma chamada HTTP GET extra para atualizar os posts após a mutação. Ele atualiza o cache localmente e exibe o novo post na tela. Isso é possível pois o React Query mantém um cache local dos dados e atualiza o cache automaticamente após a mutação.
+
+<hr/>
+
+## Conclusão
+
+Neste artigo, discutimos as opções para lidar com fetch e mutação de dados em uma aplicação React moderna. Vimos abordagens utilizando tanto APIs nativas, quanto também bibliotecas dedicadas como o React Query e o SWR, e também vimos as soluções que o Next.js oferece.
+
+No geral, eu diria que para o server-side utilizar as soluções de fetch de dados nativas do Next.js é a melhor opção. Eles fornecem todoa a parte de cache e revalidação, além de possuir as Server Actions e métodos para a parte de mutação de dados.
+
+Eu recomendo fortemente fazer as requisições no lado do servidor sempre que possível. Entretanto, para cenários de requisições no client-side, eu recomendo utilizar o React Query ou o SWR, pois além de fornecerem uma API mais simples e intuitiva, o que facilita a legibilidade do código para esses cenários, eles também possuem as funcionalidades de caching e mutação. **Mas enfim**, se fosse pra escolher uma, eu iria de SWR já que é mantida pela própria Vercel 😅.

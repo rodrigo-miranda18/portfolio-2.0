@@ -32,13 +32,17 @@ export function getPostSlugs(): string[] {
 
 export async function getPosts(locale: string): Promise<Post[]> {
   const postSlugs = getPostSlugs();
-  const posts = postSlugs.map(async (slug) => {
-    const postData = await getPost(slug, locale);
+  const posts = await Promise.all(
+    postSlugs.map(async (slug) => {
+      const postData = await getPost(slug, locale);
 
-    return { ...postData, slug };
-  });
+      return { ...postData, slug };
+    }),
+  );
 
-  return Promise.all(posts);
+  return posts.sort((a, b) =>
+    new Date(a.metadata.publishedDate) > new Date(b.metadata.publishedDate) ? -1 : 1,
+  );
 }
 
 export function formatPostDate(dateString: string, locale: string): string {
