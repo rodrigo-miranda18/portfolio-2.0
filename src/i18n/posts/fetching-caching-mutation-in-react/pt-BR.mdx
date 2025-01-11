@@ -9,7 +9,7 @@ export const metadata = {
 
 O principal objetivo desse artigo é discutir as melhores opções para lidar com dados em uma aplicação React moderna.
 
-Qualquer aplicação web um pouco mais complexa precisa lidar com fetch e mutação de dados, é uma tarefa fundamental em quase todo projeto. Entretanto, com as ultimas atualizações e constantes evoluções no ecossistema React, novas maneiras de lidar com dados foram introduzidas, e o principal objetivo desse artigo é apresentar as principais formas e discutir as melhores.
+Qualquer aplicação web um pouco mais complexa precisa lidar com fetch e mutação de dados, é uma tarefa fundamental em quase todo projeto. Entretanto, com as últimas atualizações e constantes evoluções no ecossistema React, novas maneiras de lidar com dados foram introduzidas, e o principal objetivo desse artigo é apresentar as principais formas e discutir as melhores.
 
 ## Fetch de dados
 
@@ -41,7 +41,7 @@ fetch(`https://...`, {
 
 As opções de cache e revalidação permitem que você controle o comportamento do cache de forma mais granular, definindo se a requisição deve ser feita novamente ou não, e em qual intervalo de tempo.
 
-Por padrão, a partir da versão 15 do Next.js, a diretiva padrão de cache é o `no-store`, o que significa que a requisição não será cacheada e executará a cada renderização. A diretiva `no-store` é útil para casos em que você precisa de dados sempre atualizados, como em um dashboard, por exemplo
+Por padrão, a partir da versão 15 do Next.js, a diretiva padrão de cache é o `no-store`, o que significa que a requisição não será cacheada e executará a cada renderização. A diretiva `no-store` é útil para casos em que você precisa de dados sempre atualizados, como em um dashboard, por exemplo.
 
 No entanto, na maioria das vezes não é necessário e nem desejável que a requisição seja feita a todo momento. Para esses casos, você pode utilizar a diretiva `force-cache` para que a requisição seja cacheada e definir um tempo de vida para o cache com a opção `revalidate`. O valor deve ser definido em segundos.
 
@@ -111,7 +111,7 @@ export default function Dashboard({ promise }) {
 }
 ```
 
-Como deu pra notar, a promise é passada como prop para o componente `Dashboard`. Isso se dá pois o `use` não é capaz de resolver promises criadas na renderização, portanto, elas devem ser criadas em um server component e passadas como props para client components.
+Como deu para notar, a promise é passada como prop para o componente `Dashboard`. Isso se dá pois o `use` não é capaz de resolver promises criadas na renderização, portanto, elas devem ser criadas em um server component e passadas como props para client components.
 
 A API `use` integra com o [Suspense](https://react.dev/reference/react/Suspense) e com [Error Boundaries](https://react.dev/reference/react/Suspense). Enquanto a Promise não é resolvida, o componente fornecido como fallback do Suspense será exibido em tela. Caso a promise seja rejeitada, o erro será capturado pelo Error Boundary mais próximo. Quando enfim a promise for resolvida com sucesso, então o componente `Dashboard` é renderizado.
 
@@ -283,7 +283,7 @@ A mutação de dados é o ato de criar, atualizar, ou deletar dados em tempo rea
 
 Em um exemplo básico podemos pensar em realizar um POST/PATCH/DELETE request, e atualizar o estado da aplicação através de um estado global com os dados atualizados.
 
-No entanto, essa abordagem pode se tornar complexa e difícil de manter conforme a aplicação cresce. Imagina criar um estado global para cada entidade da aplicação, e ter que lidar com a atualização de cada um deles de forma manual.
+No entanto, essa abordagem pode se tornar complexa e difícil de manter conforme a aplicação cresce. Imagine criar um estado global para cada entidade da aplicação, e ter que lidar com a atualização de cada um deles de forma manual.
 
 Também efetuar um full page refresh a cada mutação não é uma experiência agradável para o usuário, além de que a cada atualização é necessário fazer uma nova requisição para buscar os dados atualizados.
 
@@ -410,6 +410,6 @@ Esta abordagem é muito interessante pois o React Query não realiza nenhuma cha
 
 Neste artigo, discutimos as opções para lidar com fetch e mutação de dados em uma aplicação React moderna. Vimos abordagens utilizando tanto APIs nativas, quanto também bibliotecas dedicadas como o React Query e o SWR, e também vimos as soluções que o Next.js oferece.
 
-No geral, eu diria que para o server-side utilizar as soluções de fetch de dados nativas do Next.js é a melhor opção. Eles fornecem toda a parte de cache e revalidação, além de possuir as Server Actions e métodos para a parte de mutação de dados.
+No geral, eu diria que para o server-side, utilizar as soluções de fetch de dados nativas do Next.js é a melhor opção. Eles fornecem toda a parte de cache e revalidação, além de possuir as Server Actions e métodos para a parte de mutação de dados.
 
 Eu recomendo fortemente fazer as requisições no lado do servidor sempre que possível. Entretanto, para cenários de requisições no client-side, eu recomendo utilizar o React Query ou o SWR, pois além de fornecerem uma API mais simples e intuitiva, o que facilita a legibilidade do código para esses cenários, eles também possuem as funcionalidades de caching e mutação. **Mas enfim**, se fosse pra escolher uma para ser utilizada junto com o Next.js, eu iria de SWR já que é mantida pela própria Vercel 😅.

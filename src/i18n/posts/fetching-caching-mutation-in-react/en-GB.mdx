@@ -409,6 +409,6 @@ This approach is very interesting because React Query does not make any extra HT
 
 In this article, we discussed the options for handling data fetching and mutation in a modern React application. We saw approaches using both native APIs and dedicated libraries like React Query and SWR, and also saw the solutions that Next.js offers.
 
-In general, I would say that for server-side using the native data fetching solutions from Next.js is the best option. They provide all the cache and revalidation part, in addition to having the Server Actions and methods for the data mutation part.
+In general, I would say that for server-side, using the native data fetching solutions from Next.js is the best option. They provide all the cache and revalidation part, in addition to having the Server Actions and methods for the data mutation part.
 
 I strongly recommend making requests on the server-side whenever possible. However, for client-side request scenarios, I recommend using React Query or SWR, as they provide a simpler and more intuitive API, which makes the code more readable for these scenarios, and they also have caching and mutation functionalities. **But anyway**, if I had to choose one to be used together with Next.js, I would go with SWR since it is maintained by Vercel itself 😅.
