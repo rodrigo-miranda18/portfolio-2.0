@@ -1,9 +1,9 @@
 export const metadata = {
   title: 'Fetch de dados, cache, e mutação no React',
   description: 'Entenda as melhores opções para manipulação de dados em uma aplicação React',
-  publishedDate: '2025-01-10T21:09:00Z',
+  publishedDate: '2025-01-11T10:19:00Z',
 	timeToRead: '10min read',
-	// heroImage: '/posts/css-in-js-and-server-components.jpg',
+	heroImage: '/posts/fetching-caching-mutation-in-react.png',
   tags: ['html', 'css', 'javascript', 'js', 'react', 'next.js', 'swr', 'react-query', 'server-components', 'hooks'],
 }
 
@@ -111,7 +111,7 @@ export default function Dashboard({ promise }) {
 }
 ```
 
-Como vocês devem ter notado, a promise é passada como prop para o componente `Dashboard`. Isso se dá pois o `use` não é capaz de resolver promises criadas na renderização, portanto, elas devem ser criadas em um server component e passadas como prop para os client components.
+Como deu pra notar, a promise é passada como prop para o componente `Dashboard`. Isso se dá pois o `use` não é capaz de resolver promises criadas na renderização, portanto, elas devem ser criadas em um server component e passadas como props para client components.
 
 A API `use` integra com o [Suspense](https://react.dev/reference/react/Suspense) e com [Error Boundaries](https://react.dev/reference/react/Suspense). Enquanto a Promise não é resolvida, o componente fornecido como fallback do Suspense será exibido em tela. Caso a promise seja rejeitada, o erro será capturado pelo Error Boundary mais próximo. Quando enfim a promise for resolvida com sucesso, então o componente `Dashboard` é renderizado.
 
@@ -120,11 +120,16 @@ A API `use` integra com o [Suspense](https://react.dev/reference/react/Suspense)
 O exemplo completo ficaria assim:
 
 ```jsx
-// App.js
-import { Dashboard, DashboardContainer } from './Dashboard';
+// page.js
+import { DashboardContainer } from './Dashboard';
 
-export default function App() {
-  const promise = fetch('https://api.example.com/data');
+async function getData() {
+  const response = await fetch('https://dummyjson.com/products');
+  return response.json();
+}
+
+export default function Home() {
+  const promise = getData();
 
   return (
     <DashboardContainer promise={promise} />
@@ -134,7 +139,7 @@ export default function App() {
 // Dashboard.js
 'use client';
 
-import { use } from 'react';
+import { Suspense, use } from 'react';
 import { ErrorBoundary } from "react-error-boundary";
 
 export function Dashboard({ promise }) {
@@ -146,8 +151,6 @@ export function Dashboard({ promise }) {
 }
 
 export function DashboardContainer({ promise }) {
-  const data = use(promise);
-
   return (
     <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
       <Suspense fallback={<p>⌛Loading...</p>}>
@@ -158,56 +161,119 @@ export function DashboardContainer({ promise }) {
 }
 ```
 
-#### Outras alternativas
+Para evitar ficar passando a promise como prop para vários componentes filhos e evitar "prop drilling", um bom padrão a ser utilizado é combinar o `use` com a `Context API`. Você pode definir um context que envolve partes de sua aplicação e então encaminhar a promise para o provider do contexto.
 
+```jsx
+import React, { createContext, useContext } from 'react';
+
+const ProductsContext = createContext(null);
+
+export function ProductsProvider({ children }) {
+  let promise = fetch('https://dummyjson.com/products').then(res => res.json());
+
+  return (
+    <ProductsContext.Provider value={{ promise }}>
+      {children}
+    </ProductsContext.Provider>
+  );
+}
+
+export function useProductsContext() {
+  let context = useContext(ProductsContext)
+
+  if (!context) {
+    throw new Error('useProductsContext must be used within a ProductsProvider')
+  }
+  return context
+}
+```
+
+E então você pode "consumir" o contexto em qualquer componente filho do `ProductsProvider`:
+
+```jsx
+'use client'
+
+import { use } from 'react';
+import { useProductsContext } from 'app/context';
+
+export function Dashboard() {
+  let { promise } = useProductsContext()
+  let products = use(promise)
+
+  return (
+    <ul>
+      {products.map((product) => (
+        <li key={product.id}>{product.title}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+Isso é uma ótima prática em casos onde você possui estados globais e é necessário encaminhá-los profundamente na árvore de componentes, especialmente quando você possui muitos client components.
+
+#### Outras alternativas
 
 Podemos utilizar também bibliotecas como [**react-query**](https://tanstack.com/query/v5/docs/framework/react/overview) ou [**swr**](https://swr.vercel.app/).
 
 O benefício de se utilizar essas bibliotecas dedicadas é que elas já possuem funcionalidades prontas para lidar com cache, revalidação, e outras funcionalidades mais complexas de uma aplicação real. Além disso, elas possuem uma API mais simples e intuitiva para lidar com os estados de loading, erro, etc.
 
-```jsx
-// react-query
-'use client';
+<details className="mt-6">
+  <summary className="text-lg cursor-pointer">Exemplo de fetch de dados com **react-query**</summary>
 
-import { useQuery } from '@tanstack/react-query';
+  ```jsx
+  // react-query
+  'use client';
 
-async function getData() {
-  const response = await fetch('https://api.example.com/data');
-  return response.json();
-}
+  import { useQuery } from '@tanstack/react-query';
 
-export function App() {
-  const { data, error, isLoading } = useQuery({
-    queryKey: ['data'],
-    queryFn: getData,
-  });
+  async function getData() {
+    const response = await fetch('https://dummyjson.com/products');
+    return response.json();
+  }
 
-  if (error) return <div>Failed to load</div>;
-  if (isLoading) return <div>Loading...</div>;
+  export default function Dashboard() {
+    const { data, error, isLoading } = useQuery({
+      queryKey: ['data'],
+      queryFn: getData,
+    });
 
-  return (
-    <pre>{JSON.stringify(data)}</pre>
-  );
-}
-```
+    if (error) return <div>Failed to load</div>;
+    if (isLoading) return <div>Loading...</div>;
 
-```jsx
-// swr
-'use client';
+    return (
+      <pre>{JSON.stringify(data)}</pre>
+    );
+  }
+  ```
+</details>
 
-import useSWR from 'swr';
+<details className="mt-4">
+  <summary className="text-lg cursor-pointer">Exemplo de fetch de dados com **swr**</summary>
 
-export function App() {
-  const { data, error, isLoading } = useSWR('https://api.example.com/data', fetcher);
+  ```jsx
+  // swr
+  'use client';
 
-  if (error) return <div>Failed to load</div>;
-  if (isLoading) return <div>Loading...</div>;
+  import useSWR from 'swr';
 
-  return (
-    <pre>{JSON.stringify(data)}</pre>
-  );
-}
-```
+  async function fetcher() {
+    const response = await fetch('https://dummyjson.com/products');
+    return response.json();
+  }
+
+  export function Dashboard() {
+    const { data, error, isLoading } = useSWR('/products', fetcher);
+
+    if (error) return <div>Failed to load</div>;
+    if (isLoading) return <div>Loading...</div>;
+
+    return (
+      <pre>{JSON.stringify(data)}</pre>
+    );
+  }
+  ```
+</details>
 
 <hr/>
 
@@ -344,6 +410,6 @@ Esta abordagem é muito interessante pois o React Query não realiza nenhuma cha
 
 Neste artigo, discutimos as opções para lidar com fetch e mutação de dados em uma aplicação React moderna. Vimos abordagens utilizando tanto APIs nativas, quanto também bibliotecas dedicadas como o React Query e o SWR, e também vimos as soluções que o Next.js oferece.
 
-No geral, eu diria que para o server-side utilizar as soluções de fetch de dados nativas do Next.js é a melhor opção. Eles fornecem todoa a parte de cache e revalidação, além de possuir as Server Actions e métodos para a parte de mutação de dados.
+No geral, eu diria que para o server-side utilizar as soluções de fetch de dados nativas do Next.js é a melhor opção. Eles fornecem toda a parte de cache e revalidação, além de possuir as Server Actions e métodos para a parte de mutação de dados.
 
-Eu recomendo fortemente fazer as requisições no lado do servidor sempre que possível. Entretanto, para cenários de requisições no client-side, eu recomendo utilizar o React Query ou o SWR, pois além de fornecerem uma API mais simples e intuitiva, o que facilita a legibilidade do código para esses cenários, eles também possuem as funcionalidades de caching e mutação. **Mas enfim**, se fosse pra escolher uma, eu iria de SWR já que é mantida pela própria Vercel 😅.
+Eu recomendo fortemente fazer as requisições no lado do servidor sempre que possível. Entretanto, para cenários de requisições no client-side, eu recomendo utilizar o React Query ou o SWR, pois além de fornecerem uma API mais simples e intuitiva, o que facilita a legibilidade do código para esses cenários, eles também possuem as funcionalidades de caching e mutação. **Mas enfim**, se fosse pra escolher uma para ser utilizada junto com o Next.js, eu iria de SWR já que é mantida pela própria Vercel 😅.

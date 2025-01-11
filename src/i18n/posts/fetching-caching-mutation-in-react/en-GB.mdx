@@ -1,12 +1,414 @@
 export const metadata = {
-  title: 'Fetching data, caching, and mutation in React',
+  title: 'Data fetching, caching, and mutation in React',
   description: 'Understand the best options to handling data in React',
-  publishedDate: '2024-12-06T19:28:00Z',
-	// timeToRead: '8min read',
-	// heroImage: '/posts/css-in-js-and-server-components.jpg',
+  publishedDate: '2025-01-11T10:19:00Z',
+	timeToRead: '10min read',
+	heroImage: '/posts/fetching-caching-mutation-in-react.png',
   tags: ['html', 'css', 'javascript', 'js', 'react', 'next.js', 'swr', 'react-query', 'server-components', 'hooks'],
 }
 
 ## Introdução
 
 The main goal of this article is to discuss the best options for handling data in a modern React application.
+
+Any web application a little more complex needs to deal with fetching and mutating data, it is a fundamental task in almost every project. However, with the latest updates and constant evolutions in the React ecosystem, new ways of handling data have been introduced, and the main goal of this article is to present the main ways and discuss the best ones.
+
+### Data fetching
+
+The data fetching in React can be done in different ways, depending on where it occurs: on the **server-side** or on the **client-side**. Below we will discuss the options for each one.
+
+### Server-side
+
+With the introduction of Server Components, it became possible to make asynchronous calls within React components. With this, we can fetch data directly in our components. One of the possibilities is to use the native **fetch** method:
+
+```jsx
+export default async function Page() {
+  const response = await fetch("https://api.example.com/data");
+  const data = await data.json();
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+```
+
+If you are using a framework like Next.js, you can use the cache strategies provided by the library. Next.js extends the native browser [fetch](https://developer.mozilla.org/docs/Web/API/Fetch_API) API, adding a new semantics for defining cache and revalidation.
+
+```jsx
+fetch(`https://...`, {
+  cache: 'force-cache' | 'no-store',
+  next: { revalidate: false | 0 | number }
+})
+```
+
+The cache options and revalidation allow you to control the cache behavior more granularly, defining whether the request should be made again or not, and in which time interval.
+
+By default, from version 15 of Next.js, the default cache directive is `no-store`, which means that the request will not be cached and will run on each render. The `no-store` directive is useful for cases where you need always updated data, such as in a dashboard, for example.
+
+However, most of the time it is not necessary and not desirable that the request is made all the time. For these cases, you can use the `force-cache` directive so that the request is cached and set a lifetime for the cache with the `revalidate` option. The value must be set in seconds.
+
+```jsx
+fetch(`https://...`, {
+  cache: 'force-cache',
+  next: { revalidate: 60 } // Cache lifetime of 60 seconds
+})
+
+fetch(`https://...`, {
+  cache: 'no-store',
+  next: { revalidate: 60 } // Throws an error because the options are incompatible
+})
+```
+
+It's also possible to tag requests with the `tags` parameter.
+
+```jsx
+{ cache: 'force-cache', next: { tags: ['posts'] } }
+```
+
+This way is useful for cases where you need to have more control over the cache of requests and also invalidate manually using the [revalidateTag](https://nextjs.org/docs/app/api-reference/functions/revalidateTag) method. We will explore this method better when talking about data mutation.
+
+### Client-side
+
+On the client-side, the most used and most common way to fetch data is using the `useEffect` hook to perform the asynchronous call. The most basic example of this is:
+
+```jsx
+'use client';
+
+import { useEffect, useState } from 'react';
+
+export default function Dashboard() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch("https://dummyjson.com/products")
+      .then((response) => response.json())
+      .then((data) => setData(data));
+  }, []);
+
+  if (!data) {
+    return <div>loading...</div>;
+  }
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+```
+
+However, even being the most used way, **it does not mean that it is the best.**
+
+From version 19 of React, a new API was introduced to handle promises or contexts, the `use`. The `use` can be used to resolve promises in a more declarative way and without the need to use the `useEffect` hook. The example above could be rewritten as follows:
+
+```jsx
+export default async function Page() {
+  const response = await fetch("https://api.example.com/data");
+  const data = await data.json();
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+```
+
+As you can see, the promise is passed as a prop to the `Dashboard` component. This is because the `use` is not able to resolve promises created in the rendering, so they must be created in a server component and passed as props to client components.
+
+The `use` API integrates with [Suspense](https://react.dev/reference/react/Suspense) and [Error Boundaries](https://react.dev/reference/react/Suspense). While the Promise is not resolved, the component provided as Suspense fallback will be displayed on the screen. If the promise is rejected, the error will be caught by the nearest Error Boundary. When the promise is finally resolved successfully, then the `Dashboard` component is rendered.
+
+It's important to use Suspense together with the `use` because the `use` suspends the rendering of the component until the promise is resolved. By using Suspense you provide feedback to the user while the `Dashboard` component is not rendered.
+
+The complete example would look like this:
+
+```jsx
+// page.js
+import { DashboardContainer } from './Dashboard';
+
+async function getData() {
+  const response = await fetch('https://dummyjson.com/products');
+  return response.json();
+}
+
+export default function Home() {
+  const promise = getData();
+
+  return (
+    <DashboardContainer promise={promise} />
+  );
+}
+
+// Dashboard.js
+'use client';
+
+import { Suspense, use } from 'react';
+import { ErrorBoundary } from "react-error-boundary";
+
+export function Dashboard({ promise }) {
+  const data = use(promise);
+
+  return (
+    <pre>{JSON.stringify(data)}</pre>
+  );
+}
+
+export function DashboardContainer({ promise }) {
+  return (
+    <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+      <Suspense fallback={<p>⌛Loading...</p>}>
+        <Dashboard promise={promise} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+```
+
+To avoid passing the promise prop down the tree, a good pattern to use is combine the `use` with the `Context API`. You can define a context that wraps some part of your application and then forward the promise to the context provider.
+
+```jsx
+import React, { createContext, useContext } from 'react';
+
+const ProductsContext = createContext(null);
+
+export function ProductsProvider({ children }) {
+  let promise = fetch('https://dummyjson.com/products').then(res => res.json());
+
+  return (
+    <ProductsContext.Provider value={{ promise }}>
+      {children}
+    </ProductsContext.Provider>
+  );
+}
+
+export function useProductsContext() {
+  let context = useContext(ProductsContext)
+
+  if (!context) {
+    throw new Error('useProductsContext must be used within a ProductsProvider')
+  }
+  return context
+}
+```
+
+And then you can "unwrap" the promise in any component wrapped by the `ProductsProvider`:
+
+```jsx
+'use client'
+
+import { use } from 'react';
+import { useProductsContext } from 'app/context';
+
+export function Dashboard() {
+  let { promise } = useProductsContext()
+  let products = use(promise)
+
+  return (
+    <ul>
+      {products.map((product) => (
+        <li key={product.id}>{product.title}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+This works well in cases you have some global data and you need to use deep in the component tree, especially when you have a lot of client components.
+
+#### Alternatives
+
+We can also use libraries like [**react-query**](https://tanstack.com/query/v5/docs/framework/react/overview) or [**swr**](https://swr.vercel.app/).
+
+The benefit of using these dedicated libraries is that they already have ready-to-use functionalities to handle cache, revalidation, and other more complex functionalities of a real application. In addition, they have a simpler and more intuitive API to handle loading, error states, etc.
+
+<details className="mt-6">
+  <summary className="text-lg cursor-pointer">Data fetching example using **react-query**</summary>
+
+  ```jsx
+  // react-query
+  'use client';
+
+  import { useQuery } from '@tanstack/react-query';
+
+  async function getData() {
+    const response = await fetch('https://dummyjson.com/products');
+    return response.json();
+  }
+
+  export default function Dashboard() {
+    const { data, error, isLoading } = useQuery({
+      queryKey: ['data'],
+      queryFn: getData,
+    });
+
+    if (error) return <div>Failed to load</div>;
+    if (isLoading) return <div>Loading...</div>;
+
+    return (
+      <pre>{JSON.stringify(data)}</pre>
+    );
+  }
+  ```
+</details>
+
+<details className="mt-4">
+  <summary className="text-lg cursor-pointer">Data fetching example using **swr**</summary>
+
+  ```jsx
+  // swr
+  'use client';
+
+  import useSWR from 'swr';
+
+  async function fetcher() {
+    const response = await fetch('https://dummyjson.com/products');
+    return response.json();
+  }
+
+  export function Dashboard() {
+    const { data, error, isLoading } = useSWR('/products', fetcher);
+
+    if (error) return <div>Failed to load</div>;
+    if (isLoading) return <div>Loading...</div>;
+
+    return (
+      <pre>{JSON.stringify(data)}</pre>
+    );
+  }
+  ```
+</details>
+
+<hr/>
+
+## Data mutation
+
+Data mutation is the act of creating, updating, or deleting data in real-time in the application.
+
+In a basic example, we can think of making a POST/PATCH/DELETE request, and updating the application state through a global state with the updated data.
+
+However, this approach can become complex and difficult to maintain as the application grows. Imagine creating a global state for each entity in the application, and having to deal with updating each of them manually.
+
+Also, performing a full page refresh on each mutation is not a pleasant experience for the user, and with each update, a new request is required to fetch the updated data.
+
+Let's see how we can improve this experience using the same libraries we saw earlier.
+
+### Next.js
+
+In Next.js, we can use the [Server Actions](https://react.dev/reference/rsc/server-functions) to perform data mutations on the server-side. Server Actions are functions that are executed on the server-side and can be called directly in React components.
+
+In Server Components we can create Server Functions with the `use server` directive at the beginning of the function.
+
+```jsx
+export async default function Page() {
+  // Server Action
+  async function createPost() {
+    'use server'
+    // Mutate data
+    // ...
+ 
+  return <></>;
+}
+```
+
+In Client Components, we can create a separate file that has the `use server` directive and call these functions directly in html events, such as a button click, for example, or using the action attribute of the form element.
+
+```jsx
+// actions.js
+'use server';
+ 
+export async function createPost() {}
+
+// button.js
+'use client'
+ 
+import { createPost } from '@/app/actions';
+ 
+export function Button() {
+  return (
+    <button
+      onClick={async () => {
+        const createdPost = await createPost()
+      }}
+    >
+      Create
+    </button>
+  );
+}
+```
+
+After the mutation is performed, we can use the `revalidateTag` method or the `revalidatePath` to revalidate the cache of the requests.
+
+```jsx
+// actions.js
+'use server'
+ 
+import { revalidateTag } from 'next/cache';
+import { redirect } from 'next/navigation'
+ 
+export async function createPost(formData: FormData) {
+  // Mutate data
+  // ...
+ 
+  revalidateTag('posts'); // Or revalidatePath('/posts')
+  redirect('/posts'); // Redirect to posts page
+}
+```
+
+### React Query
+
+For example purposes, I will present only the data mutation with React Query, but the same can be done with SWR in a similar way.
+
+In React Query, we can use the `useMutation` hook to perform data mutations. The `useMutation` hook returns a `mutateAsync` function that can be called to perform the mutation.
+
+```jsx
+'use client';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+async function createPost(formData) {
+  const response = await fetch('https://api.example.com/posts', {
+    method: 'POST',
+    body: JSON.stringify(formData),
+  });
+
+  return response.json();
+}
+
+export function App() {
+  const queryClient = useQueryClient();
+  const { mutateAsync: createPostFn } = useMutation({
+    mutationFn: createPost,
+    onSuccess(_, variables) {
+      queryClient.setQueryData(['posts'], (data) => (
+        [...data, variables]
+      ));
+    }
+  });
+
+  async function handleCreatePost(data) {
+    try {
+      await createPostFn(data);
+
+      alert('Post created successfully!');
+    } catch (error) {
+      alert('Error creating post');
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit(handleCreatePost)}>
+      {/* Form fields */}
+    </form>
+  );
+}
+```
+
+The `useMutation` hook accepts a configuration object with the `mutationFn` function that is the function that performs the mutation, and the `onSuccess` function that is called when the mutation is successfully performed. In the example above, the `onSuccess` function updates the posts cache with the new post created.
+
+This approach is very interesting because React Query does not make any extra HTTP GET call to update the posts after the mutation. It updates the cache locally and displays the new post on the screen. This is possible because React Query maintains a local cache of the data and updates the cache automatically after the mutation.
+
+<hr/>
+
+## Conclusion
+
+In this article, we discussed the options for handling data fetching and mutation in a modern React application. We saw approaches using both native APIs and dedicated libraries like React Query and SWR, and also saw the solutions that Next.js offers.
+
+In general, I would say that for server-side using the native data fetching solutions from Next.js is the best option. They provide all the cache and revalidation part, in addition to having the Server Actions and methods for the data mutation part.
+
+I strongly recommend making requests on the server-side whenever possible. However, for client-side request scenarios, I recommend using React Query or SWR, as they provide a simpler and more intuitive API, which makes the code more readable for these scenarios, and they also have caching and mutation functionalities. **But anyway**, if I had to choose one to be used together with Next.js, I would go with SWR since it is maintained by Vercel itself 😅.

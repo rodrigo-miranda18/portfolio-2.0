@@ -40,7 +40,7 @@ export default function Header() {
   }, [menuIsOpen]);
 
   return (
-    <header className="px-9 pb-4 pt-9 lg:pt-11">
+    <header className="px-6 pb-4 pt-9 lg:pt-11">
       <div className="m-auto flex max-w-6xl justify-between">
         <Link href="/" className="font-grifter text-5xl">
           R

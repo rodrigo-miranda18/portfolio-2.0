@@ -49,7 +49,7 @@ export default async function PostSingle({ params }: PageProps) {
     const post = await getPost(slug, locale);
 
     return (
-      <article className="mx-auto max-w-3xl px-9 pb-16 pt-12">
+      <article className="mx-auto max-w-3xl px-6 pb-16 pt-12">
         <Link href="/blog" className="flex items-center gap-x-1 font-semibold text-purple-500">
           <ChevronLeft size={16} />
           {t('goBack')}
