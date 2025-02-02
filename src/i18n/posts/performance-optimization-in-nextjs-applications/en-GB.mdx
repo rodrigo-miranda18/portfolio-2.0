@@ -1,0 +1,190 @@
+export const metadata = {
+  title: 'Basic guide to optimize the performance of Next.js applications',
+  description: 'Step-by-step base of optimizations to improve the performance of your Next.js application, using Core Web Vitals metrics.',
+  publishedDate: '2025-02-01T12:00:00Z',
+	timeToRead: '8min read',
+	heroImage: '/posts/performance-optimization-in-nextjs-applications.png',
+  tags: ['html', 'css', 'javascript', 'js', 'react', 'next.js', 'optimization', 'performance', 'core-web-vitals'],
+}
+
+I always missed a place where I could centralize the best performance optimization practices that I have already applied in my Next.js projects, even to consult later. I decided to write this post to centralize everything in one place.
+
+This article serves as a basic (and perhaps advanced) guide to optimizations to improve the performance of a Next.js application. Need to improve the score of your Next.js site? Use this article as a base, and optimize step by step the performance of your application.
+
+I will mainly consider the Core Web Vitals metrics, which are the performance metrics that Google uses to evaluate the user experience on a site.
+
+## Image Optimization
+
+I would say that image optimization is one of the most important, and one of the simplest to apply with the [Image](https://nextjs.org/docs/pages/api-reference/components/image) component from Next.js. Just using the component you already get a series of optimizations automatically. If your site uses many images, for example in a blog, or ecommerce, this optimization is essential and will probably give you many points in the Lighthouse score.
+
+The Next.js Image component is very powerful and performs a series of automatic optimizations:
+
+- **Responsive images**: Automatically creates multiple versions of an image for different screen sizes. This is called [responsive images](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images). The browser will download the image that best fits the user's screen size. This is very important for mobile devices, where the screen width is smaller, and the image needs to be smaller as well. This feature considerably reduces the final size of the image.
+- **Conversion to WebP and AVIF**: In the process of creating the image versions, the component automatically converts images to WebP and AVIF, which are more modern and lighter image formats than JPG and PNG. This is done automatically, and the browser will download the image in the format it supports.
+
+With just these series of automatic optimizations, the size of the image served to the user is drastically reduced. If, for example, you have an unoptimized JPG or PNG image of 700kb, you will notice that the mobile version after optimization will easily contain less than 90kb.
+
+In addition, the Image component provides other good features:
+
+
+- **Lazy loading**: The Image component automatically lazy loads images, that is, it will only download the image when it is visible on the user's screen. This is also very important for page performance, as it prevents the browser from downloading images that the user will not see on first section.
+- **Visual Stability**: Automatically prevents [CLS](https://web.dev/articles/cls) in advance.
+
+In addition, if your audit tool is reporting [LCP](https://web.dev/articles/lcp) on an image, you can use the `priority` attribute to preload the image.
+
+- **Image preload**: Unlike images that can be loaded only when the user sees them, using the Lazy Loading feature, there are images that you want to load as soon as possible, for example images of the first fold of your page. Usually these images affect the [LCP](https://web.dev/articles/lcp) of the site. Using the `priority` attribute in the Image component, Next.js adds an HTML `link` tag to preload the image, causing the browser to load the image in advance.
+
+## Font Optimization
+
+Use Next.js `next/font` to load your application's fonts. With `next/font`, it is possible to load fonts with zero layout shift, and also improve performance with optimized loading.
+
+You can import any font from [Google Fonts](https://fonts.google.com/). The font files are downloaded at build time and served along with your static assets. **No request is made to Google in the browser**.
+
+```jsx
+import { Inter } from 'next/font/google'
+ 
+const inter = Inter({ subsets: ['latin'] })
+ 
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" className={inter.className}>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+## Code Splitting
+
+During development, it is essential to think about Code Splitting. Code Splitting is the act of splitting the application code into several pieces, and loading only the necessary code for the user's experience.
+
+### Dynamic Import
+
+Use Next.js [Dynamic Import](https://nextjs.org/docs/app/building-your-application/optimizing/lazy-loading#nextdynamic) to dynamically import components only when their use is necessary.
+
+```jsx
+'use client'
+
+import { useState } from 'react'
+import dynamic from 'next/dynamic'
+
+import Component from '../components/a'
+
+const DynamicComponent = dynamic(() => import('../components/b'))
+
+export default function Example() {
+  const [showMore, setShowMore] = useState(false)
+ 
+  return (
+    <div>
+      {/* Carrega imediatamente */}
+      <ComponentA />
+
+      {/* Carrega sob demanda, apenas quando/se a condição for atendida */}
+      {showMore && <ComponentB />}
+
+      <button onClick={() => setShowMore(!showMore)}>Toggle</button>
+    </div>
+  )
+}
+```
+
+For a good user experience, it is important to define a fallback for the component that is being dynamically loaded. The fallback is a component that will be displayed while the dynamic component is being loaded. This prevents the user from seeing a blank screen while the component is being loaded, in addition to preventing a possible CLS.
+
+```jsx
+const DynamicComponent = dynamic(() => import('../components/b'), {
+  loading: () => <p>Loading...</p>,
+})
+```
+
+### Loading external libraries
+
+External libraries that are used only at specific moments in the application flow, or in specific user interactions, do not need to be loaded in the initial application bundle.
+
+To load them dynamically, use the dynamic [import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) of javascript.
+
+```jsx
+'use client'
+
+import { useState } from 'react'
+
+export default function Example() {
+  const [showMore, setShowMore] = useState(false)
+
+  return (
+    <div>
+      <button
+        onClick={async () => {
+          const { default: library } = await import('library')
+          library.init()
+          setShowMore(true)
+        }}
+      >
+        Show More
+      </button>
+    </div>
+  )
+}
+```
+
+## Server Components
+
+If your application uses a version equal to or greater than Next.js 13, you can use **Server Components**. The more Server Components used instead of Client Components, the smaller the final bundle and the less Javascript to be loaded by the user. This will decrease the overall page load time and help with metrics like [TBT](https://web.dev/articles/tbt) (Total Blocking Time) and [FCP](https://web.dev/articles/fcp) (First Contentful Paint).
+
+Use a development based on Server Components whenever possible, and use Client Components only when necessary. In addition to reducing the size of the final bundle, they increase the initial page load time, since they are not sent to the client and therefore the user does not need to wait for the Javascript to be downloaded.
+
+## Optimization of third-party scripts
+
+Use the Next.js [Script](https://nextjs.org/docs/app/api-reference/components/script) component to load third-party scripts in an optimized way. Scripts like Google Analytics, Facebook Pixel, Hotjar, among others, affect the performance of your application. They can block page rendering or add extra load time.
+
+For scripts that do not require critical load time or low priority, use the `strategy="lazyOnload"` attribute. This loading strategy will load the script only when all page resources have already been loaded, and will probably not impact your final performance score.
+
+```jsx
+import Script from 'next/script'
+
+export default function Home() {
+  return (
+    <div>
+      <h1>My Homepage</h1>
+      <Script src="https://www.google-analytics.com/analytics.js" strategy="lazyOnload" />
+    </div>
+  )
+}
+```
+
+### Bonus
+
+It is also possible to load your script in a different thread from the main thread, using the `strategy=worker` attribute. With this, the script will be loaded in a separate thread, and will not block the resources that run on the main thread.
+
+To enable the use of `strategy=worker`, you need to enable the `nextScriptWorkers` flag in your `next.config.js` file:
+
+```js
+// next.config.js
+module.exports = {
+  experimental: {
+    nextScriptWorkers: true,
+  },
+}
+```
+
+It is important to understand that this is an advanced strategy and does not work for all scripts. It is important to know if the service used depends on resources from the main thread, and after implementation perform a battery of tests to test its operation.
+
+Unfortunately this feature is not yet available for the **App Router**.
+
+## Rendering strategies
+
+If your page is a blog post, or an e-commerce product, or any page with non-"real-time" content, and you have a large user base, there is no reason not to use static rendering.
+
+If possible, also try to create them as much as possible at build time, and use [Incremental Static Regeneration](https://nextjs.org/docs/app/building-your-application/data-fetching/incremental-static-regeneration) to regenerate them. Creating pages at build time greatly improves the initial page load and the first users who access it.
+
+In summary, use static rendering as much as possible.
+
+## Conclusion
+
+The optimizations presented can be done in almost any application. It is important to understand that each project has its own set of challenges and optimizations, and that other optimizations can be created depending on your use case.
+
+However, ensuring that the points in this article have been applied to your project, you will minimally be on the right path to having good performance on your page.
+
+It is important to remember that performance optimization is an ongoing process, and a habit that should be had during development. Performing audits and generating reports constantly are parts of the development process, and essential to continue delivering good performance to your users.
+
+These are the optimizations that I apply in my projects, and that help me to have good performance. I hope they help you too. 
