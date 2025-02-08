@@ -2,7 +2,7 @@ export const metadata = {
   title: 'Guia básico para otimizar a performance de aplicações Next.js',
   description: 'Passo a passo base de otimizações para melhorar a performance da sua aplicação Next.js, utilizando as métricas do Core Web Vitals.',
   publishedDate: '2025-02-01T12:00:00Z',
-	timeToRead: '8min de leitura',
+	timeToRead: '9min de leitura',
 	heroImage: '/posts/performance-optimization-in-nextjs-applications.png',
   tags: ['html', 'css', 'javascript', 'js', 'react', 'next.js', 'optimization', 'performance', 'core-web-vitals'],
 }
@@ -19,19 +19,24 @@ Eu diria que a otimização de imagens é uma das mais importantes, e uma das ma
 
 O componente Image do Next.js é muito poderoso, e faz uma série de otimizações automáticas:
 
-- **Imagens responsivas**: Cria automaticamente várias versões de uma imagem para diferentes tamanhos de tela. Isso é chamado de [imagens responsivas](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images). O navegador irá baixar a imagem que melhor se encaixa no tamanho da tela do usuário. Isso é muito importante para dispositivos móveis, onde a largura de tela é menor, e a imagem precisa ser menor também. Este recurso reduz consideravelmente o tamanho final da imagem.
+- **Imagens responsivas**: Cria automaticamente múltiplas versões de uma imagem para diferentes tamanhos de tela. Isso é chamado de [imagens responsivas](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images). O navegador irá baixar a imagem que melhor se encaixa no tamanho da tela do usuário. Isso é muito importante para dispositivos móveis, onde a largura de tela é menor, e a imagem precisa ser menor também. Este recurso reduz consideravelmente o tamanho final da imagem.
 - **Conversão para WebP e AVIF**: No processo de criação das versões da imagem, o componente converte automaticamente as imagens para WebP e AVIF, que são formatos de imagem mais modernos e mais leves que o JPG e PNG. Isso é feito automaticamente, e o navegador irá baixar a imagem no formato que ele suporta.
-
-Com apenas essas série de otimizações automáticas, o tamanho da imagem servida ao usuário é reduzido drasticamente. Se por exemplo você tem uma imagem JPG ou PNG não otimizada de tamanho de 700kb, notará que a versão mobile após a otimização conterá facilmente menos de 90kb.
-
-Além disso, o componente Image fornece outros bons recursos:
-
 - **Lazy loading**: O componente Image faz lazy loading automático das imagens, ou seja, ele só irá baixar a imagem quando ela estiver visível na tela do usuário. Este também é bem importante para a performance da página, pois evita que o navegador baixe imagens que o usuário não irá ver em um primeiro contato.
 - **Estabilidade Visual**: Previne automaticamente o [CLS](https://web.dev/articles/cls) antecipadamente.
 
-Além disso, se a sua ferramenta de auditoria estiver acusando [LCP](https://web.dev/articles/lcp) em uma imagem, você pode utilizar o atributo `priority` para fazer o preload da imagem.
+### Otimizações Manuais
 
-- **Preload de imagens**: Ao contrário das imagens que podem ser carregadas apenas quando o usuário as vê, utilizando o recurso de Lazy Loading, existem as imagens que você deseja carregar antecipadamente, por exemplo imagens da primeira dobra da sua página. Geralmente essas imagens afetam o [LCP](https://web.dev/articles/lcp) do site. Utilizando o atributo `priority` no componente Image, o Next.js adiciona uma tag HTML `link` de preload para a imagem, fazendo com que o navegador carregue a imagem antecipadamente.
+Para imagens que utilizam o atributo `fill`, **sempre utilize o atributo `sizes` para definir a largura da sua imagem nos diferentes tamanhos de tela**. Além de ajudar o Next a gerar tamanhos mais apropriados para o contexto de uso da sua imagem, ajudará o browser a decidir qual versão da imagem baixar. Caso você não utilize o atributo `sizes`, o Next.js irá utilizar o valor padrão de `100vw`, o que na maioria dos casos é um grande desperdício.
+
+Se a sua imagem por exemplo ocupa apenas 33% da largura da tela em desktop, e 50% de largura em mobile, você pode definir o atributo `sizes` da seguinte forma: `sizes="(min-width: 1024px) 33vw, 50vw"`. Não definindo o atributo `sizes` neste contexto, faria com que uma imagem 2x maior que o necessário fosse exibida em mobile e 3x maior em desktop.
+
+Com apenas essa otimização de imagens responsivas que o Next.js fornece automaticamente, com a adição do atributo `sizes` dando mais contexto da exibição da sua imagem, o tamanho da imagem servida ao usuário é reduzido drasticamente. Se por exemplo você tem uma imagem JPG ou PNG não otimizada de tamanho de 700kb, utilizando corretamente o atributo `sizes`, notará que a versão mobile conterá facilmente menos de 60kb.
+
+É realmente impressionante o poder do componente Image do Next.js, mesmo com poucas configurações adicionais.
+
+Além disso, mesmo depois de otimizadas, caso sua ferramenta de auditoria esteja acusando [LCP](https://web.dev/articles/lcp) em alguma imagem da primeira dobra, você pode utilizar o atributo `priority` para fazer o preload da imagem.
+
+Ao contrário das imagens que podem ser carregadas apenas quando o usuário as vê, utilizando o recurso de Lazy Loading, existem as imagens que você deseja carregar antecipadamente, por exemplo imagens da primeira dobra da sua página. Geralmente essas imagens afetam o [LCP](https://web.dev/articles/lcp) do site. Utilizando o atributo `priority` no componente Image, o Next.js adiciona uma tag HTML `link` de preload para a imagem, fazendo com que o navegador carregue a imagem antecipadamente.
 
 ## Font Optimization
 
@@ -151,6 +156,8 @@ export default function Home() {
 }
 ```
 
+**OBS**: Tente evitar ao máximo utilizar o Google Tag Manager para carregar scripts e serviços na sua página. O GTM é um serviço que carrega scripts de terceiros de forma assíncrona. Priorize sempre carregar os scripts separadamente diretamente na sua página com estratégias de carregamento específicas para cada um utilizando o componente Script.
+
 ### Bônus
 
 Também é possível carregar o seu script em uma thread diferente da thread principal, utilizando o atributo `strategy=worker`. Com isso, o script será carregado em uma thread separada, e não irá bloquear os recursos que rodam na thread principal.
@@ -172,11 +179,11 @@ Infelizmente esse recurso ainda não está disponível para o **App Router**.
 
 ## Estratégias de renderização
 
-Se a sua página é um post de blog, ou um produto de e-commerce, ou qualquer página com um conteúdo não "real-time", e você possui uma base grande de usuários, não tem porquê não utilizar uma renderização estática.
+Utilize sempre que possível renderização estática. Se a sua página é um post de blog, ou um produto de e-commerce, ou qualquer página com um conteúdo não "real-time", e você possui uma base grande de usuários, não tem porquê não utilizar uma renderização estática.
 
-Se possível também, tente criar elas ao máximo em tempo de build, e utilize o [Incremental Static Regeneration](https://nextjs.org/docs/app/building-your-application/data-fetching/incremental-static-regeneration) para regenerá-las. Criar as páginas em tempo de build melhora muito o carregamento inicial da página e dos primeiro usuários que acessam.
+Caso a sua página necessariamente precise e utilize de dados em tempo real, carregue a página utilizando a estratégia de [streaming](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming). Utilizar streaming para carregar a sua página permite que o conteúdo seja carregado de forma incremental, ou seja, não bloqueará a renderização da página enquanto todos os dados da página estão sendo carregados.
 
-Em resumo, utilize a renderização estática o máximo possível.
+Exiba feedbacks ao usuário nas partes que estão sendo carregadas, como por exemplo com Skeletons, enquanto as partes que não exigem dados em tempo real são exibidas imediatamente.
 
 ## Conclusão
 

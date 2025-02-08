@@ -2,7 +2,7 @@ export const metadata = {
   title: 'Basic guide to optimize the performance of Next.js applications',
   description: 'Step-by-step base of optimizations to improve the performance of your Next.js application, using Core Web Vitals metrics.',
   publishedDate: '2025-02-01T12:00:00Z',
-	timeToRead: '8min read',
+	timeToRead: '9min read',
 	heroImage: '/posts/performance-optimization-in-nextjs-applications.png',
   tags: ['html', 'css', 'javascript', 'js', 'react', 'next.js', 'optimization', 'performance', 'core-web-vitals'],
 }
@@ -21,18 +21,22 @@ The Next.js Image component is very powerful and performs a series of automatic 
 
 - **Responsive images**: Automatically creates multiple versions of an image for different screen sizes. This is called [responsive images](https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images). The browser will download the image that best fits the user's screen size. This is very important for mobile devices, where the screen width is smaller, and the image needs to be smaller as well. This feature considerably reduces the final size of the image.
 - **Conversion to WebP and AVIF**: In the process of creating the image versions, the component automatically converts images to WebP and AVIF, which are more modern and lighter image formats than JPG and PNG. This is done automatically, and the browser will download the image in the format it supports.
-
-With just these series of automatic optimizations, the size of the image served to the user is drastically reduced. If, for example, you have an unoptimized JPG or PNG image of 700kb, you will notice that the mobile version after optimization will easily contain less than 90kb.
-
-In addition, the Image component provides other good features:
-
-
 - **Lazy loading**: The Image component automatically lazy loads images, that is, it will only download the image when it is visible on the user's screen. This is also very important for page performance, as it prevents the browser from downloading images that the user will not see on first section.
 - **Visual Stability**: Automatically prevents [CLS](https://web.dev/articles/cls) in advance.
 
-In addition, if your audit tool is reporting [LCP](https://web.dev/articles/lcp) on an image, you can use the `priority` attribute to preload the image.
+### Manually optimizations
 
-- **Image preload**: Unlike images that can be loaded only when the user sees them, using the Lazy Loading feature, there are images that you want to load as soon as possible, for example images of the first fold of your page. Usually these images affect the [LCP](https://web.dev/articles/lcp) of the site. Using the `priority` attribute in the Image component, Next.js adds an HTML `link` tag to preload the image, causing the browser to load the image in advance.
+For images that use the `fill` attribute, **always use the `sizes` attribute to define the width of your image on different screen sizes**. In addition to helping Next to generate more appropriate sizes for the context of use of your image, it will help the browser decide which version of the image to download. If you do not use the `sizes` attribute, Next.js will use the default value of `100vw`, which in most cases is a huge waste.
+
+If your image, for example, occupies only 33% of the screen width on desktop, and 50% on mobile, you can define the `sizes` attribute as follows: `sizes="(min-width: 1024px) 33vw, 50vw"`. Not defining the `sizes` attribute in this context would display an image 2x larger than necessary and 3x larger on desktop.
+
+With just this responsive image optimization that Next.js automatically provides, with the addition of the `sizes` attribute giving more context of your image display, the size of the image served to the user is drastically reduced. For example, if you have a non-optimized JPG or PNG image of 700kb, correctly using the `sizes` attribute, you will notice that the mobile version will easily contain less than 60kb.
+
+It is really impressive the power of the Next.js Image component, even with few additional settings.
+
+Even after being optimized, if your audit tool is accusing [LCP](https://web.dev/articles/lcp) on an image from the first fold, you can use the `priority` attribute to preload the image.
+
+Unlike images that can be loaded only when the user sees them, using the Lazy Loading feature, there are images that you want to load as soon as possible, for example, images from the first fold of your page. Usually these images affect the [LCP](https://web.dev/articles/lcp) of the site. Using the `priority` attribute in the Image component, Next.js adds a preload HTML `link` tag for the image, causing the browser to load the image in advance.
 
 ## Font Optimization
 
@@ -152,6 +156,8 @@ export default function Home() {
 }
 ```
 
+**OBS**: Try to avoid using Google Tag Manager to load scripts and services on your page as much as possible. GTM is a service that loads third-party scripts asynchronously. Always prioritize loading scripts separately directly on your page with specific loading strategies for each one using the Script component.
+
 ### Bonus
 
 It is also possible to load your script in a different thread from the main thread, using the `strategy=worker` attribute. With this, the script will be loaded in a separate thread, and will not block the resources that run on the main thread.
@@ -173,11 +179,11 @@ Unfortunately this feature is not yet available for the **App Router**.
 
 ## Rendering strategies
 
-If your page is a blog post, or an e-commerce product, or any page with non-"real-time" content, and you have a large user base, there is no reason not to use static rendering.
+Use as much as possible static rendering. If your page is a blog post, or an e-commerce product, or any page with non-real-time content, and you have a large user base, there is no reason not to use static rendering.
 
-If possible, also try to create them as much as possible at build time, and use [Incremental Static Regeneration](https://nextjs.org/docs/app/building-your-application/data-fetching/incremental-static-regeneration) to regenerate them. Creating pages at build time greatly improves the initial page load and the first users who access it.
+If your page necessarily needs and uses real-time data, load the page using the [streaming](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming) strategy. Using streaming to load your page allows the content to be loaded incrementally, it will not block the rendering of the page while all the page data is being loaded.
 
-In summary, use static rendering as much as possible.
+Display feedback to the user in the parts that are being loaded, such as with Skeletons, while the parts that do not require real-time data are displayed immediately.
 
 ## Conclusion
 
